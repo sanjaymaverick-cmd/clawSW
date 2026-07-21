@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, Me } from "./api";
+import InventoryPage from "./InventoryPage";
 import Login from "./Login";
 import UsersPanel from "./UsersPanel";
 
 const TOKEN_KEY = "clawsw_token";
+type Tab = "overview" | "inventory" | "users";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() =>
@@ -11,6 +13,7 @@ export default function App() {
   );
   const [me, setMe] = useState<Me | null>(null);
   const [loading, setLoading] = useState(Boolean(token));
+  const [tab, setTab] = useState<Tab>("overview");
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
@@ -85,31 +88,59 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
-        <section className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold text-slate-800">Your access</h2>
-          <p className="text-sm text-slate-500 mb-3">
-            Granted by the permissions table for role “{me.role}”.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {me.permissions.map((p) => (
-              <span
-                key={`${p.resource}:${p.action}`}
-                className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
+      <nav className="mx-auto max-w-5xl px-4 pt-4">
+        <div className="flex gap-1">
+          {(
+            [
+              ["overview", "Overview", true],
+              ["inventory", "Inventory", can("inventory", "read")],
+              ["users", "Users", can("admin", "read")],
+            ] as [Tab, string, boolean][]
+          )
+            .filter(([, , visible]) => visible)
+            .map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setTab(key)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium ${
+                  tab === key
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
               >
-                {p.resource}:{p.action}
-              </span>
+                {label}
+              </button>
             ))}
-          </div>
-        </section>
+        </div>
+      </nav>
 
-        {can("admin", "read") && (
-          <UsersPanel token={token} canWrite={can("admin", "write")} selfId={me.id} />
+      <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
+        {tab === "overview" && (
+          <section className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-lg font-semibold text-slate-800">Your access</h2>
+            <p className="text-sm text-slate-500 mb-3">
+              Granted by the permissions table for role “{me.role}”.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {me.permissions.map((p) => (
+                <span
+                  key={`${p.resource}:${p.action}`}
+                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
+                >
+                  {p.resource}:{p.action}
+                </span>
+              ))}
+            </div>
+          </section>
         )}
 
-        <p className="text-xs text-slate-400">
-          Phase 0 — auth &amp; RBAC foundation. Inventory arrives in Phase 1.
-        </p>
+        {tab === "inventory" && can("inventory", "read") && (
+          <InventoryPage token={token} canWrite={can("inventory", "write")} />
+        )}
+
+        {tab === "users" && can("admin", "read") && (
+          <UsersPanel token={token} canWrite={can("admin", "write")} selfId={me.id} />
+        )}
       </main>
     </div>
   );

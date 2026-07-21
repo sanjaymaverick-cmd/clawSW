@@ -44,7 +44,7 @@ every build session.
 | Phase | Scope | Status |
 |---|---|---|
 | 0 | Scaffolding: Docker Compose, auth, users/roles/permissions | **done** |
-| 1 | Inventory core | not started |
+| 1 | Inventory core | **done** |
 | 2 | Service module | not started |
 | 3 | Role dashboards | not started |
 | 4 | Public website | not started |

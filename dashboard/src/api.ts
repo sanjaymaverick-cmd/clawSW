@@ -58,6 +58,48 @@ async function request<T>(
   return resp.json() as Promise<T>;
 }
 
+export interface Item {
+  id: string;
+  sku: string;
+  name: string;
+  category: string | null;
+  unit: string | null;
+  price: number;
+  reorder_level: number;
+  is_spare: boolean;
+  is_tool: boolean;
+  description: string | null;
+  image_path: string | null;
+}
+
+export interface Warehouse {
+  id: string;
+  name: string;
+  location: string | null;
+}
+
+export interface StockLevel {
+  item_id: string;
+  sku: string;
+  item_name: string;
+  warehouse_id: string;
+  warehouse_name: string;
+  quantity: number;
+  reorder_level: number;
+  below_reorder: boolean;
+}
+
+export interface StockMove {
+  id: string;
+  sku: string;
+  item_name: string;
+  warehouse_name: string;
+  quantity: number;
+  move_type: string;
+  created_by_name: string;
+  created_at: string;
+}
+
 export const api = {
   login: (email: string, password: string) =>
     request<{ access_token: string }>("/auth/login", {
@@ -76,4 +118,31 @@ export const api = {
       body: { active },
       token,
     }),
+
+  listItems: (token: string) => request<Item[]>("/items", { token }),
+  createItem: (token: string, body: Partial<Item>) =>
+    request<Item>("/items", { method: "POST", body, token }),
+  listWarehouses: (token: string) => request<Warehouse[]>("/warehouses", { token }),
+  createWarehouse: (token: string, body: { name: string; location?: string }) =>
+    request<Warehouse>("/warehouses", { method: "POST", body, token }),
+  listStock: (token: string) => request<StockLevel[]>("/stock", { token }),
+  adjustStock: (
+    token: string,
+    body: {
+      item_id: string;
+      warehouse_id: string;
+      move_type: "in" | "out";
+      quantity: number;
+    },
+  ) => request<StockLevel>("/stock/adjust", { method: "POST", body, token }),
+  transferStock: (
+    token: string,
+    body: {
+      item_id: string;
+      from_warehouse_id: string;
+      to_warehouse_id: string;
+      quantity: number;
+    },
+  ) => request<StockLevel[]>("/stock/transfer", { method: "POST", body, token }),
+  listStockMoves: (token: string) => request<StockMove[]>("/stock/moves", { token }),
 };
