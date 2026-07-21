@@ -43,11 +43,14 @@ BLUEPRINT_MATRIX = {
     },
 }
 
-# Every (resource, action) any router currently gates on.
+# Every (resource, action) any router currently gates on — including the
+# has_permission() section checks in the reports router.
 GATES_IN_USE = {
     ("inventory", "read"), ("inventory", "write"),
     ("service_jobs", "read"), ("service_jobs", "write"),
     ("admin", "read"), ("admin", "write"),
+    ("reports", "read"),
+    ("invoices", "read"),
 }
 
 
