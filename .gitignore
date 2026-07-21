@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node (React dashboard, Next.js site)
+node_modules/
+.next/
+dist/
+build/
+*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Docker / data volumes
+pgdata/
+*.log
+
+# Uploaded files / local storage (images, brochures)
+storage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
