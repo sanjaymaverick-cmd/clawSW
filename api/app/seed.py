@@ -26,12 +26,17 @@ ROLE_NAMES = [
 ]
 
 # role -> list of (resource, action)
+# The 'website' resource (Phase 4: machinery/projects content, incoming
+# website orders, demo bookings) extends the section-4 matrix: owner and
+# manager run it, accountant and warehouse see incoming orders read-only.
+# Like everything else it is table rows, adjustable without code changes.
 PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
     "owner": [
         ("inventory", "read"), ("inventory", "write"),
         ("invoices", "read"),
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
+        ("website", "read"), ("website", "write"),
         ("admin", "read"), ("admin", "write"),
     ],
     "manager": [
@@ -39,11 +44,13 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
         ("invoices", "read"),
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
+        ("website", "read"), ("website", "write"),
     ],
     "accountant": [
         ("inventory", "read"),
         ("invoices", "read"), ("invoices", "write"),
         ("reports", "read"),
+        ("website", "read"),
     ],
     "service_manager": [
         ("inventory", "read"),
@@ -57,6 +64,7 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
     "warehouse": [
         ("inventory", "read"), ("inventory", "write"),
         ("reports", "read"),
+        ("website", "read"),
     ],
 }
 

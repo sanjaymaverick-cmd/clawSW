@@ -4,12 +4,17 @@ Phase 0: users, roles, permissions
 Phase 1: items, warehouses, stock_levels, stock_moves
 Phase 2: service_jobs, job_parts_used (+ machinery table only, as the
          FK target of service_jobs.machine_id — its endpoints are Phase 4)
+Phase 4: completed_projects, website_orders, website_order_items,
+         demo_bookings
 """
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from sqlalchemy import (
+    ARRAY,
+    JSON,
     Boolean,
+    Date,
     DateTime,
     ForeignKey,
     Integer,
@@ -25,6 +30,10 @@ from .db import Base
 # NUMERIC columns per the blueprint; asdecimal=False keeps the Python/JSON
 # side as plain numbers while the database column type stays NUMERIC.
 NUMERIC = Numeric(asdecimal=False)
+
+# TEXT[] per the blueprint on Postgres; the SQLite test database has no
+# array type, so it stores the same list as JSON there.
+TEXT_ARRAY = ARRAY(Text).with_variant(JSON(), "sqlite")
 
 
 def _utcnow() -> datetime:
@@ -176,3 +185,64 @@ class JobPartUsed(Base):
 
     job: Mapped[ServiceJob] = relationship(back_populates="parts_used")
     item: Mapped[Item] = relationship()
+
+
+class CompletedProject(Base):
+    __tablename__ = "completed_projects"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    image_paths: Mapped[list[str] | None] = mapped_column(TEXT_ARRAY)
+    client_name: Mapped[str | None] = mapped_column(Text)
+    date_completed: Mapped[date | None] = mapped_column(Date)
+
+
+class WebsiteOrder(Base):
+    __tablename__ = "website_orders"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    customer_name: Mapped[str] = mapped_column(Text, nullable=False)
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+    phone: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(
+        Text, nullable=False, default="pending"
+    )  # 'pending','confirmed','synced_to_tally'
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
+
+    items: Mapped[list["WebsiteOrderItem"]] = relationship(back_populates="order")
+
+
+class WebsiteOrderItem(Base):
+    __tablename__ = "website_order_items"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    order_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("website_orders.id"), nullable=False
+    )
+    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("items.id"), nullable=False)
+    quantity: Mapped[float] = mapped_column(NUMERIC, nullable=False)
+    price_at_order: Mapped[float] = mapped_column(NUMERIC, nullable=False)
+
+    order: Mapped[WebsiteOrder] = relationship(back_populates="items")
+    item: Mapped[Item] = relationship()
+
+
+class DemoBooking(Base):
+    __tablename__ = "demo_bookings"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    customer_name: Mapped[str] = mapped_column(Text, nullable=False)
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+    phone: Mapped[str | None] = mapped_column(Text)
+    machinery_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("machinery.id"), nullable=False
+    )
+    preferred_date: Mapped[date | None] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(
+        Text, nullable=False, default="pending"
+    )  # 'pending','confirmed','cancelled'
+
+    machinery: Mapped[Machinery] = relationship()

@@ -43,8 +43,15 @@ services:
       - "8080:80"
 
   website:
-    build: ./website
+    build:
+      context: ./website
+      args:
+        # URL browsers use to reach the API (baked into the client bundle).
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
     restart: unless-stopped
+    environment:
+      # Server-side rendering talks to the API over the compose network.
+      API_URL: http://api:8000
     depends_on:
       - api
     ports:

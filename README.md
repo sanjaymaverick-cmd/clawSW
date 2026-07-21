@@ -47,7 +47,7 @@ every build session.
 | 1 | Inventory core | **done** |
 | 2 | Service module | **done** |
 | 3 | Role dashboards | **done** |
-| 4 | Public website | not started |
+| 4 | Public website | **done** |
 | 5 | Tally sync | not started |
 | 6 | Audit + hardening | not started |
 | 7 | AI query layer (optional) | not started |
@@ -72,7 +72,7 @@ Postgres is not exposed to the host network; data persists in `./pgdata`.
 ```
 api/        FastAPI backend — auth, RBAC (permissions table), users admin
 dashboard/  React + Vite + Tailwind internal dashboard
-website/    Next.js public site (placeholder until Phase 4)
+website/    Next.js public site — catalog, brochures, projects, demo booking
 docs/       BLUEPRINT.md — architecture & build plan (source of truth)
 ```
 
