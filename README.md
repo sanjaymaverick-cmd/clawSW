@@ -84,6 +84,11 @@ cd api && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/uvicorn app.main:app --reload        # http://localhost:8000
 .venv/bin/python -m pytest                     # run the test suite
 
+# Database migrations (Alembic) — run automatically on API startup.
+# After changing models in api/app/models.py, generate a migration:
+#   cd api && .venv/bin/alembic revision --autogenerate -m "describe change"
+# The test suite fails if models drift from migrations (test_migrations.py).
+
 # Dashboard (proxies /api to localhost:8000)
 cd dashboard && npm install && npm run dev     # http://localhost:5173
 

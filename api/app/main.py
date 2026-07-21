@@ -1,22 +1,37 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
+from alembic import command
+from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect
 
 from .config import settings
-from .db import Base, SessionLocal, engine
+from .db import SessionLocal, engine
 from .routers import auth, inventory, service, users
 from .seed import seed
 
 logging.basicConfig(level=logging.INFO)
 
+# The revision that captures the schema as it stood before Alembic was
+# introduced (phases 0-2). Databases created back then by
+# Base.metadata.create_all() already match it and only need stamping.
+BASELINE_REVISION = "d5c1f027e9a2"
+
+
+def run_migrations() -> None:
+    cfg = Config(str(Path(__file__).resolve().parent.parent / "alembic.ini"))
+    inspector = inspect(engine)
+    if inspector.has_table("users") and not inspector.has_table("alembic_version"):
+        command.stamp(cfg, BASELINE_REVISION)
+    command.upgrade(cfg, "head")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Phase 0: create_all + idempotent seed. Alembic migrations come with
-    # the first schema change in Phase 1.
-    Base.metadata.create_all(bind=engine)
+    run_migrations()
     with SessionLocal() as db:
         seed(db)
     yield
