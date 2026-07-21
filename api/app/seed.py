@@ -25,11 +25,9 @@ ROLE_NAMES = [
     "warehouse",
 ]
 
-# role -> list of (resource, action)
-# The 'website' resource (Phase 4: machinery/projects content, incoming
-# website orders, demo bookings) extends the section-4 matrix: owner and
-# manager run it, accountant and warehouse see incoming orders read-only.
-# Like everything else it is table rows, adjustable without code changes.
+# role -> list of (resource, action), encoding the BLUEPRINT.md section-4
+# matrix including its Website module column (Phase 4). Like everything
+# else these are table rows, adjustable without code changes.
 PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
     "owner": [
         ("inventory", "read"), ("inventory", "write"),

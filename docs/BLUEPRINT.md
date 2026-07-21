@@ -85,14 +85,19 @@ as an external system you sync with, not something you rebuild.
 
 ## 4. Roles & Permission Matrix
 
-| Role | Inventory | Invoicing/Tally view | Service jobs | Reports | Admin |
-|---|---|---|---|---|---|
-| Owner/CEO | full | full (read) | full | full | full |
-| Manager | read/write | read | full | department | no |
-| Accountant | read (deduct on invoice) | full | no | financial only | no |
-| Service Manager | read | no | full | service only | no |
-| Technician | read (own assigned items) | no | own jobs only | no | no |
-| Warehouse/Inventory Mgr | full | no | no | stock only | no |
+| Role | Inventory | Invoicing/Tally view | Service jobs | Reports | Website module | Admin |
+|---|---|---|---|---|---|---|
+| Owner/CEO | full | full (read) | full | full | read/write | full |
+| Manager | read/write | read | full | department | read/write | no |
+| Accountant | read (deduct on invoice) | full | no | financial only | read | no |
+| Service Manager | read | no | full | service only | no | no |
+| Technician | read (own assigned items) | no | own jobs only | no | no | no |
+| Warehouse/Inventory Mgr | full | no | no | stock only | read | no |
+
+Website module (added in Phase 4): machinery/projects content, incoming
+website orders (confirming an order deducts stock), and demo bookings.
+Owner and Manager manage it; Accountant and Warehouse see incoming orders
+read-only.
 
 Enforcement: every API route checks `role` + `resource` + `action` against a
 permissions table (not hardcoded if/else) so you can adjust access later

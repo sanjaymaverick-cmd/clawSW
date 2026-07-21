@@ -7,8 +7,8 @@ from app.db import SessionLocal
 from app.models import Permission, Role, User
 from app.seed import PERMISSION_MATRIX, ROLE_NAMES, seed
 
-# docs/BLUEPRINT.md section 4, one row per role, plus the Phase 4
-# 'website' resource extension. Spelled out here independently of
+# docs/BLUEPRINT.md section 4, one row per role (including the Website
+# module column added in Phase 4). Spelled out here independently of
 # app.seed so a typo there cannot self-validate.
 BLUEPRINT_MATRIX = {
     "owner": {
