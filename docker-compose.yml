@@ -1,0 +1,51 @@
+name: clawsw
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: clawsw
+      POSTGRES_USER: clawsw
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clawsw -d clawsw"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # Postgres is intentionally NOT published to the host network;
+    # only services on the internal compose network can reach it.
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://clawsw:${POSTGRES_PASSWORD}@db:5432/clawsw
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      ADMIN_NAME: ${ADMIN_NAME:-Owner}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?set ADMIN_EMAIL in .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://localhost:3000}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  dashboard:
+    build: ./dashboard
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+  website:
+    build: ./website
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"

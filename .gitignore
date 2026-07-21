@@ -23,6 +23,7 @@ build/
 # Docker / data volumes
 pgdata/
 *.log
+*.db
 
 # Uploaded files / local storage (images, brochures)
 storage/

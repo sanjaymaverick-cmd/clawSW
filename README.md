@@ -43,7 +43,7 @@ every build session.
 
 | Phase | Scope | Status |
 |---|---|---|
-| 0 | Scaffolding: Docker Compose, auth, users/roles/permissions | not started |
+| 0 | Scaffolding: Docker Compose, auth, users/roles/permissions | **done** |
 | 1 | Inventory core | not started |
 | 2 | Service module | not started |
 | 3 | Role dashboards | not started |
@@ -51,6 +51,45 @@ every build session.
 | 5 | Tally sync | not started |
 | 6 | Audit + hardening | not started |
 | 7 | AI query layer (optional) | not started |
+
+## Running it
+
+```bash
+cp .env.example .env   # then edit: set real passwords + JWT secret
+docker compose up --build
+```
+
+- Internal dashboard: http://localhost:8080 — sign in with the
+  `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env` (an owner account is
+  seeded on first startup)
+- Public website: http://localhost:3000
+- API docs (OpenAPI): http://localhost:8000/docs
+
+Postgres is not exposed to the host network; data persists in `./pgdata`.
+
+### Repo layout
+
+```
+api/        FastAPI backend — auth, RBAC (permissions table), users admin
+dashboard/  React + Vite + Tailwind internal dashboard
+website/    Next.js public site (placeholder until Phase 4)
+docs/       BLUEPRINT.md — architecture & build plan (source of truth)
+```
+
+### Development without Docker
+
+```bash
+# API (needs a local Postgres, or set DATABASE_URL to sqlite for a quick try)
+cd api && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+.venv/bin/uvicorn app.main:app --reload        # http://localhost:8000
+.venv/bin/python -m pytest                     # run the test suite
+
+# Dashboard (proxies /api to localhost:8000)
+cd dashboard && npm install && npm run dev     # http://localhost:5173
+
+# Website
+cd website && npm install && npm run dev       # http://localhost:3000
+```
 
 ## Working on this repo with Claude Code
 
