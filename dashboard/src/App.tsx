@@ -2,10 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { api, Me } from "./api";
 import InventoryPage from "./InventoryPage";
 import Login from "./Login";
+import ServicePage from "./ServicePage";
 import UsersPanel from "./UsersPanel";
 
 const TOKEN_KEY = "clawsw_token";
-type Tab = "overview" | "inventory" | "users";
+type Tab = "overview" | "inventory" | "service" | "users";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() =>
@@ -94,6 +95,7 @@ export default function App() {
             [
               ["overview", "Overview", true],
               ["inventory", "Inventory", can("inventory", "read")],
+              ["service", "Service", can("service_jobs", "read")],
               ["users", "Users", can("admin", "read")],
             ] as [Tab, string, boolean][]
           )
@@ -136,6 +138,14 @@ export default function App() {
 
         {tab === "inventory" && can("inventory", "read") && (
           <InventoryPage token={token} canWrite={can("inventory", "write")} />
+        )}
+
+        {tab === "service" && can("service_jobs", "read") && (
+          <ServicePage
+            token={token}
+            canWrite={can("service_jobs", "write")}
+            isTechnician={me.role === "technician"}
+          />
         )}
 
         {tab === "users" && can("admin", "read") && (

@@ -142,3 +142,56 @@ class StockMoveOut(BaseModel):
     reference_id: uuid.UUID | None
     created_by_name: str
     created_at: datetime
+
+
+# ---- Phase 2: service module ----
+
+JOB_STATUSES = ("open", "in_progress", "completed", "billed")
+
+
+class ServiceJobCreate(BaseModel):
+    customer_name: str = Field(min_length=1)
+    assigned_technician_id: uuid.UUID
+    machine_id: uuid.UUID | None = None
+    description: str | None = None
+
+
+class ServiceJobUpdate(BaseModel):
+    customer_name: str | None = Field(default=None, min_length=1)
+    assigned_technician_id: uuid.UUID | None = None
+    machine_id: uuid.UUID | None = None
+    description: str | None = None
+    status: str | None = Field(default=None, pattern="^(open|in_progress|completed|billed)$")
+
+
+class ServiceJobOut(BaseModel):
+    id: uuid.UUID
+    customer_name: str
+    machine_id: uuid.UUID | None
+    machine_name: str | None
+    assigned_technician_id: uuid.UUID
+    technician_name: str
+    status: str
+    description: str | None
+    created_at: datetime
+    completed_at: datetime | None
+
+
+class TechnicianOut(BaseModel):
+    id: uuid.UUID
+    name: str
+
+
+class JobPartCreate(BaseModel):
+    item_id: uuid.UUID
+    warehouse_id: uuid.UUID
+    quantity: float = Field(gt=0)
+
+
+class JobPartOut(BaseModel):
+    id: uuid.UUID
+    item_id: uuid.UUID
+    sku: str
+    item_name: str
+    unit: str | None
+    quantity: float

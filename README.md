@@ -45,7 +45,7 @@ every build session.
 |---|---|---|
 | 0 | Scaffolding: Docker Compose, auth, users/roles/permissions | **done** |
 | 1 | Inventory core | **done** |
-| 2 | Service module | not started |
+| 2 | Service module | **done** |
 | 3 | Role dashboards | not started |
 | 4 | Public website | not started |
 | 5 | Tally sync | not started |

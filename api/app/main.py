@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import Base, SessionLocal, engine
-from .routers import auth, inventory, users
+from .routers import auth, inventory, service, users
 from .seed import seed
 
 logging.basicConfig(level=logging.INFO)
@@ -35,6 +35,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(inventory.router)
+app.include_router(service.router)
 
 
 @app.get("/health")
