@@ -195,3 +195,55 @@ class JobPartOut(BaseModel):
     item_name: str
     unit: str | None
     quantity: float
+
+
+# ---- Phase 3: role dashboards / reports ----
+
+class LowStockRow(BaseModel):
+    sku: str
+    name: str
+    total_quantity: float
+    reorder_level: int
+
+
+class StockReport(BaseModel):
+    total_items: int
+    total_warehouses: int
+    total_stock_value: float
+    low_stock: list[LowStockRow]
+    moves_last_7_days: int
+
+
+class TechnicianOpenRow(BaseModel):
+    technician_name: str
+    open_jobs: int
+
+
+class ServiceReport(BaseModel):
+    jobs_by_status: dict[str, int]
+    open_by_technician: list[TechnicianOpenRow]
+    avg_completion_hours: float | None
+    parts_used_value: float
+
+
+class FinancialReport(BaseModel):
+    # Placeholder financials until Phase 5 brings real invoices via Tally.
+    billed_jobs: int
+    billed_parts_value: float
+    stock_value: float
+
+
+class PeopleReport(BaseModel):
+    active_users: int
+    users_by_role: dict[str, int]
+
+
+class ReportSummary(BaseModel):
+    """Sections are present only when the caller's role holds reports:read
+    plus read on the section's underlying resource — scoping comes from the
+    permissions table, never from role names."""
+
+    stock: StockReport | None = None
+    service: ServiceReport | None = None
+    financial: FinancialReport | None = None
+    people: PeopleReport | None = None

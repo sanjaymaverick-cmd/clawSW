@@ -40,6 +40,19 @@ def get_current_user(
     return user
 
 
+def has_permission(db: Session, user: User, resource: str, action: str) -> bool:
+    return (
+        db.execute(
+            select(Permission.id).where(
+                Permission.role_id == user.role_id,
+                Permission.resource == resource,
+                Permission.action == action,
+            )
+        ).first()
+        is not None
+    )
+
+
 def require_permission(resource: str, action: str):
     """Route dependency enforcing RBAC against the permissions table.
 

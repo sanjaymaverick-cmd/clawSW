@@ -127,6 +127,36 @@ export interface JobPart {
   quantity: number;
 }
 
+export interface ReportSummary {
+  stock: {
+    total_items: number;
+    total_warehouses: number;
+    total_stock_value: number;
+    low_stock: {
+      sku: string;
+      name: string;
+      total_quantity: number;
+      reorder_level: number;
+    }[];
+    moves_last_7_days: number;
+  } | null;
+  service: {
+    jobs_by_status: Record<string, number>;
+    open_by_technician: { technician_name: string; open_jobs: number }[];
+    avg_completion_hours: number | null;
+    parts_used_value: number;
+  } | null;
+  financial: {
+    billed_jobs: number;
+    billed_parts_value: number;
+    stock_value: number;
+  } | null;
+  people: {
+    active_users: number;
+    users_by_role: Record<string, number>;
+  } | null;
+}
+
 export const api = {
   login: (email: string, password: string) =>
     request<{ access_token: string }>("/auth/login", {
@@ -201,4 +231,7 @@ export const api = {
     jobId: string,
     body: { item_id: string; warehouse_id: string; quantity: number },
   ) => request<JobPart>(`/service-jobs/${jobId}/parts`, { method: "POST", body, token }),
+
+  reportSummary: (token: string) =>
+    request<ReportSummary>("/reports/summary", { token }),
 };

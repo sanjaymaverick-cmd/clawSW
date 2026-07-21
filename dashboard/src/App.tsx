@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, Me } from "./api";
+import DashboardPage from "./DashboardPage";
 import InventoryPage from "./InventoryPage";
 import Login from "./Login";
 import ServicePage from "./ServicePage";
 import UsersPanel from "./UsersPanel";
 
 const TOKEN_KEY = "clawsw_token";
-type Tab = "overview" | "inventory" | "service" | "users";
+type Tab = "dashboard" | "overview" | "inventory" | "service" | "users";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() =>
@@ -29,7 +30,16 @@ export default function App() {
     api
       .me(token)
       .then((m) => {
-        if (!cancelled) setMe(m);
+        if (cancelled) return;
+        setMe(m);
+        // Land on the dashboard when the role can see it.
+        if (
+          m.permissions.some(
+            (p) => p.resource === "reports" && p.action === "read",
+          )
+        ) {
+          setTab((prev) => (prev === "overview" ? "dashboard" : prev));
+        }
       })
       .catch(() => {
         if (!cancelled) logout();
@@ -93,6 +103,7 @@ export default function App() {
         <div className="flex gap-1">
           {(
             [
+              ["dashboard", "Dashboard", can("reports", "read")],
               ["overview", "Overview", true],
               ["inventory", "Inventory", can("inventory", "read")],
               ["service", "Service", can("service_jobs", "read")],
@@ -117,6 +128,10 @@ export default function App() {
       </nav>
 
       <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
+        {tab === "dashboard" && can("reports", "read") && (
+          <DashboardPage token={token} />
+        )}
+
         {tab === "overview" && (
           <section className="bg-white rounded-xl shadow p-6">
             <h2 className="text-lg font-semibold text-slate-800">Your access</h2>
