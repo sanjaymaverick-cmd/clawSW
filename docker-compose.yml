@@ -58,6 +58,29 @@ services:
       api:
         condition: service_started  # API runs migrations on startup
 
+  # Encrypted backup cron (Phase 6): pg_dump | gzip | AES-256 into
+  # BACKUP_DIR — point that at a SECOND local disk so losing the primary
+  # SSD doesn't lose the backups too. Restore:
+  #   docker compose run --rm backup /scripts/restore.sh /backups/<file>
+  backup:
+    image: postgres:16
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/scripts/backup_cron.sh"]
+    environment:
+      PGHOST: db
+      PGUSER: clawsw
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: clawsw
+      BACKUP_PASSPHRASE: ${BACKUP_PASSPHRASE:?set BACKUP_PASSPHRASE in .env}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}
+    volumes:
+      - ./scripts:/scripts:ro
+      - ${BACKUP_DIR:-./backups}:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+
   dashboard:
     build: ./dashboard
     restart: unless-stopped

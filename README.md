@@ -49,7 +49,7 @@ every build session.
 | 3 | Role dashboards | **done** |
 | 4 | Public website | **done** |
 | 5 | Tally sync | **done** |
-| 6 | Audit + hardening | not started |
+| 6 | Audit + hardening | **done** |
 | 7 | AI query layer (optional) | not started |
 
 ## Running it
@@ -91,12 +91,40 @@ production data:
    for the result. Failed pushes stay `confirmed` and are retried each
    cycle; the log row carries Tally's error message.
 
+### Audit log & encrypted backups (Phase 6)
+
+Every write to the sensitive tables — `users`, `stock_moves`,
+`service_jobs`, `website_orders` — is recorded in `audit_log`
+automatically (action, acting user, client IP, full row snapshot with
+password hashes redacted), in the same transaction as the write itself.
+Route handlers never log manually, so nothing can be forgotten; writes
+without a signed-in user (public website orders, the Tally bridge) are
+recorded with no user. The Owner-only **Audit** tab on the dashboard
+(and `GET /audit`) shows the trail; the RBAC suite asserts the
+blueprint's "can a technician see accountant data" scenario directly
+against the API.
+
+The `backup` service is a basic backup cron: every
+`BACKUP_INTERVAL_SECONDS` (default daily, plus once at startup) it runs
+`pg_dump`, gzips and AES-256-encrypts the dump with `BACKUP_PASSPHRASE`,
+and writes it to `BACKUP_DIR` — set that to a mount on a **second local
+disk** (e.g. `/mnt/backup-disk/clawsw`) so one disk failure can't take
+the database and its backups together. Backups older than
+`BACKUP_RETENTION_DAYS` are pruned. Keep a copy of the passphrase off the
+machine: without it a backup is unrecoverable. To restore into an empty
+database:
+
+```bash
+docker compose run --rm backup /scripts/restore.sh /backups/clawsw-<stamp>.sql.gz.enc
+```
+
 ### Repo layout
 
 ```
 api/        FastAPI backend — auth, RBAC (permissions table), users admin
 dashboard/  React + Vite + Tailwind internal dashboard
 website/    Next.js public site — catalog, brochures, projects, demo booking
+scripts/    encrypted backup cron + restore (Phase 6)
 docs/       BLUEPRINT.md — architecture & build plan (source of truth)
 ```
 

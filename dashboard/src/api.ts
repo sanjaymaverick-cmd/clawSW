@@ -195,6 +195,18 @@ export interface TallySyncLogEntry {
   synced_at: string;
 }
 
+export interface AuditEntry {
+  id: string;
+  user_id: string | null;
+  user_name: string | null;
+  action: "create" | "update" | "delete";
+  resource: string;
+  resource_id: string;
+  ip_address: string | null;
+  payload_snapshot: Record<string, unknown> | null;
+  created_at: string;
+}
+
 export const api = {
   login: (email: string, password: string) =>
     request<{ access_token: string }>("/auth/login", {
@@ -291,4 +303,12 @@ export const api = {
       method: "POST",
       token,
     }),
+
+  listAudit: (token: string, filters: { resource?: string; action?: string } = {}) => {
+    const params = new URLSearchParams();
+    if (filters.resource) params.set("resource", filters.resource);
+    if (filters.action) params.set("action", filters.action);
+    const qs = params.toString();
+    return request<AuditEntry[]>(`/audit${qs ? `?${qs}` : ""}`, { token });
+  },
 };
