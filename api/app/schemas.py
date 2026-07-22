@@ -424,6 +424,21 @@ class TallyStatusOut(BaseModel):
     last_push_at: datetime | None
 
 
+# ---- Phase 6: audit log ----
+
+class AuditLogOut(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID | None
+    # None = write without a signed-in user (public website, bridge worker).
+    user_name: str | None
+    action: str
+    resource: str
+    resource_id: uuid.UUID
+    ip_address: str | None
+    payload_snapshot: dict | None
+    created_at: datetime
+
+
 class PublicOrderReceipt(BaseModel):
     """What the public order/booking endpoints return: enough for the
     customer to reference their request, nothing internal."""

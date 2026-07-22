@@ -11,6 +11,7 @@ Run with:  python -m app.tally_worker
 import logging
 import time
 
+from . import audit  # noqa: F401 — registers the audit_log flush listener
 from .config import settings
 from .db import SessionLocal
 from .tally import TallyClient, pull_payments, push_confirmed_orders

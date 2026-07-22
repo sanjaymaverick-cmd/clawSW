@@ -7,6 +7,7 @@ Phase 2: service_jobs, job_parts_used (+ machinery table only, as the
 Phase 4: completed_projects, website_orders, website_order_items,
          demo_bookings
 Phase 5: tally_sync_log
+Phase 6: audit_log
 """
 import uuid
 from datetime import date, datetime, timezone
@@ -24,6 +25,7 @@ from sqlalchemy import (
     UniqueConstraint,
     Uuid,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -35,6 +37,9 @@ NUMERIC = Numeric(asdecimal=False)
 # TEXT[] per the blueprint on Postgres; the SQLite test database has no
 # array type, so it stores the same list as JSON there.
 TEXT_ARRAY = ARRAY(Text).with_variant(JSON(), "sqlite")
+
+# JSONB per the blueprint on Postgres; plain JSON on the SQLite test database.
+JSONB_ = JSON().with_variant(JSONB(), "postgresql")
 
 
 def _utcnow() -> datetime:
@@ -245,6 +250,27 @@ class TallySyncLog(Base):
     synced_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_utcnow
     )
+
+
+class AuditLog(Base):
+    """Written automatically by app/audit.py on every flush that touches an
+    audited table — never inserted by route handlers directly."""
+
+    __tablename__ = "audit_log"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    # Nullable: public-website writes and worker processes have no user.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    action: Mapped[str] = mapped_column(Text, nullable=False)  # 'create','update','delete'
+    resource: Mapped[str] = mapped_column(Text, nullable=False)  # audited table name
+    resource_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
+    ip_address: Mapped[str | None] = mapped_column(Text)
+    payload_snapshot: Mapped[dict | None] = mapped_column(JSONB_)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, index=True
+    )
+
+    user: Mapped[User | None] = relationship()
 
 
 class DemoBooking(Base):

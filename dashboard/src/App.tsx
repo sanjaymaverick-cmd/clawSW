@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, Me } from "./api";
+import AuditPage from "./AuditPage";
 import DashboardPage from "./DashboardPage";
 import InventoryPage from "./InventoryPage";
 import Login from "./Login";
@@ -8,7 +9,14 @@ import TallyPage from "./TallyPage";
 import UsersPanel from "./UsersPanel";
 
 const TOKEN_KEY = "clawsw_token";
-type Tab = "dashboard" | "overview" | "inventory" | "service" | "invoicing" | "users";
+type Tab =
+  | "dashboard"
+  | "overview"
+  | "inventory"
+  | "service"
+  | "invoicing"
+  | "users"
+  | "audit";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() =>
@@ -110,6 +118,7 @@ export default function App() {
               ["service", "Service", can("service_jobs", "read")],
               ["invoicing", "Invoicing", can("invoices", "read")],
               ["users", "Users", can("admin", "read")],
+              ["audit", "Audit", can("admin", "read")],
             ] as [Tab, string, boolean][]
           )
             .filter(([, , visible]) => visible)
@@ -172,6 +181,8 @@ export default function App() {
         {tab === "users" && can("admin", "read") && (
           <UsersPanel token={token} canWrite={can("admin", "write")} selfId={me.id} />
         )}
+
+        {tab === "audit" && can("admin", "read") && <AuditPage token={token} />}
       </main>
     </div>
   );
