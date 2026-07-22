@@ -157,6 +157,44 @@ export interface ReportSummary {
   } | null;
 }
 
+export interface WebsiteOrderItem {
+  id: string;
+  item_id: string;
+  sku: string;
+  item_name: string;
+  quantity: number;
+  price_at_order: number;
+}
+
+export interface WebsiteOrder {
+  id: string;
+  customer_name: string;
+  email: string;
+  phone: string | null;
+  status: "pending" | "confirmed" | "synced_to_tally";
+  created_at: string;
+  items: WebsiteOrderItem[];
+  total: number;
+}
+
+export interface TallyStatus {
+  gateway_reachable: boolean;
+  pending_push_count: number;
+  synced_order_count: number;
+  failed_push_count: number;
+  last_push_at: string | null;
+}
+
+export interface TallySyncLogEntry {
+  id: string;
+  direction: "to_tally" | "from_tally";
+  entity_type: string;
+  entity_id: string;
+  status: "success" | "failed" | "payment_received";
+  error_message: string | null;
+  synced_at: string;
+}
+
 export const api = {
   login: (email: string, password: string) =>
     request<{ access_token: string }>("/auth/login", {
@@ -234,4 +272,23 @@ export const api = {
 
   reportSummary: (token: string) =>
     request<ReportSummary>("/reports/summary", { token }),
+
+  listWebsiteOrders: (token: string, status?: string) =>
+    request<WebsiteOrder[]>(
+      `/website/orders${status ? `?status_filter=${status}` : ""}`,
+      { token },
+    ),
+  tallyStatus: (token: string) => request<TallyStatus>("/tally/status", { token }),
+  tallySyncLog: (token: string) =>
+    request<TallySyncLogEntry[]>("/tally/sync-log", { token }),
+  tallyPushOrder: (token: string, orderId: string) =>
+    request<TallySyncLogEntry>(`/tally/push/orders/${orderId}`, {
+      method: "POST",
+      token,
+    }),
+  tallyPullPayments: (token: string) =>
+    request<TallySyncLogEntry[]>("/tally/pull-payments", {
+      method: "POST",
+      token,
+    }),
 };

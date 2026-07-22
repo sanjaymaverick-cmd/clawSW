@@ -10,7 +10,7 @@ from sqlalchemy import inspect
 
 from .config import settings
 from .db import SessionLocal, engine
-from .routers import auth, inventory, public, reports, service, users, website
+from .routers import auth, inventory, public, reports, service, tally, users, website
 from .seed import seed
 
 logging.basicConfig(level=logging.INFO)
@@ -54,6 +54,7 @@ app.include_router(service.router)
 app.include_router(reports.router)
 app.include_router(public.router)
 app.include_router(website.router)
+app.include_router(tally.router)
 
 
 @app.get("/health")

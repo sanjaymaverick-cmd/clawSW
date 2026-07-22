@@ -48,7 +48,7 @@ every build session.
 | 2 | Service module | **done** |
 | 3 | Role dashboards | **done** |
 | 4 | Public website | **done** |
-| 5 | Tally sync | not started |
+| 5 | Tally sync | **done** |
 | 6 | Audit + hardening | not started |
 | 7 | AI query layer (optional) | not started |
 
@@ -66,6 +66,30 @@ docker compose up --build
 - API docs (OpenAPI): http://localhost:8000/docs
 
 Postgres is not exposed to the host network; data persists in `./pgdata`.
+
+### Tally bridge (Phase 5)
+
+The `tally-bridge` service is a separate worker so a Tally outage never
+blocks inventory/service ops. Every `TALLY_SYNC_INTERVAL_SECONDS` it pushes
+confirmed website orders to Tally Prime's XML/HTTP gateway as Sales
+vouchers (flipping them to `synced_to_tally`) and polls Receipt vouchers to
+record payment status in `tally_sync_log`. The dashboard's **Invoicing**
+tab (Accountant: full; Owner/Manager: read) shows bridge status, the sync
+log, and manual push/pull triggers.
+
+Tally-side setup — do this in a **sandbox company file first** (blueprint
+Phase 5) and run a handful of invoices through before pointing at
+production data:
+
+1. In Tally: enable **ODBC/XML Server** (gateway defaults to port 9000)
+   and set `TALLY_URL` in `.env` to that machine, e.g.
+   `http://192.168.1.20:9000`.
+2. Create the ledgers named by `TALLY_SALES_LEDGER` and
+   `TALLY_PARTY_LEDGER`, and stock items named exactly like your clawSW
+   item names.
+3. Confirm a website order, then watch the Invoicing tab / `tally_sync_log`
+   for the result. Failed pushes stay `confirmed` and are retried each
+   cycle; the log row carries Tally's error message.
 
 ### Repo layout
 

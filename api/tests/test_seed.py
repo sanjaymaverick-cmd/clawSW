@@ -55,7 +55,7 @@ GATES_IN_USE = {
     ("service_jobs", "read"), ("service_jobs", "write"),
     ("admin", "read"), ("admin", "write"),
     ("reports", "read"),
-    ("invoices", "read"),
+    ("invoices", "read"), ("invoices", "write"),
     ("website", "read"), ("website", "write"),
 }
 

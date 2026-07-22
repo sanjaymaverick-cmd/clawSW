@@ -6,6 +6,7 @@ Phase 2: service_jobs, job_parts_used (+ machinery table only, as the
          FK target of service_jobs.machine_id — its endpoints are Phase 4)
 Phase 4: completed_projects, website_orders, website_order_items,
          demo_bookings
+Phase 5: tally_sync_log
 """
 import uuid
 from datetime import date, datetime, timezone
@@ -228,6 +229,22 @@ class WebsiteOrderItem(Base):
 
     order: Mapped[WebsiteOrder] = relationship(back_populates="items")
     item: Mapped[Item] = relationship()
+
+
+class TallySyncLog(Base):
+    __tablename__ = "tally_sync_log"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    direction: Mapped[str] = mapped_column(Text, nullable=False)  # 'to_tally','from_tally'
+    entity_type: Mapped[str] = mapped_column(Text, nullable=False)  # e.g. 'website_order'
+    entity_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
+    status: Mapped[str] = mapped_column(
+        Text, nullable=False
+    )  # 'success','failed','payment_received'
+    error_message: Mapped[str | None] = mapped_column(Text)
+    synced_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
 
 
 class DemoBooking(Base):

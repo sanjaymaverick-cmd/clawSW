@@ -34,6 +34,30 @@ services:
     ports:
       - "8000:8000"
 
+  # Tally XML bridge (Phase 5) — its own service so a Tally outage never
+  # blocks the API: pushes confirmed website orders as Sales vouchers and
+  # polls Receipt vouchers for payment status.
+  tally-bridge:
+    build: ./api
+    command: ["python", "-m", "app.tally_worker"]
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://clawsw:${POSTGRES_PASSWORD}@db:5432/clawsw
+      # Tally Prime's XML/HTTP gateway on the LAN. Point at a SANDBOX
+      # company first (blueprint Phase 5) before production data.
+      TALLY_URL: ${TALLY_URL:-http://host.docker.internal:9000}
+      TALLY_COMPANY: ${TALLY_COMPANY:-}
+      TALLY_SALES_LEDGER: ${TALLY_SALES_LEDGER:-Sales}
+      TALLY_PARTY_LEDGER: ${TALLY_PARTY_LEDGER:-Website Customers}
+      TALLY_SYNC_INTERVAL_SECONDS: ${TALLY_SYNC_INTERVAL_SECONDS:-60}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started  # API runs migrations on startup
+
   dashboard:
     build: ./dashboard
     restart: unless-stopped

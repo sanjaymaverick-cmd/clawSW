@@ -398,6 +398,32 @@ class DemoBookingOut(BaseModel):
     status: str
 
 
+# ---- Phase 5: Tally sync ----
+
+SYNC_DIRECTIONS = ("to_tally", "from_tally")
+SYNC_STATUSES = ("success", "failed", "payment_received")
+
+
+class TallySyncLogOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    direction: str
+    entity_type: str
+    entity_id: uuid.UUID
+    status: str
+    error_message: str | None
+    synced_at: datetime
+
+
+class TallyStatusOut(BaseModel):
+    gateway_reachable: bool
+    pending_push_count: int
+    synced_order_count: int
+    failed_push_count: int
+    last_push_at: datetime | None
+
+
 class PublicOrderReceipt(BaseModel):
     """What the public order/booking endpoints return: enough for the
     customer to reference their request, nothing internal."""
