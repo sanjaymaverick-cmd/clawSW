@@ -25,13 +25,16 @@ ROLE_NAMES = [
     "warehouse",
 ]
 
-# role -> list of (resource, action)
+# role -> list of (resource, action), encoding the BLUEPRINT.md section-4
+# matrix including its Website module column (Phase 4). Like everything
+# else these are table rows, adjustable without code changes.
 PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
     "owner": [
         ("inventory", "read"), ("inventory", "write"),
         ("invoices", "read"),
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
+        ("website", "read"), ("website", "write"),
         ("admin", "read"), ("admin", "write"),
     ],
     "manager": [
@@ -39,11 +42,13 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
         ("invoices", "read"),
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
+        ("website", "read"), ("website", "write"),
     ],
     "accountant": [
         ("inventory", "read"),
         ("invoices", "read"), ("invoices", "write"),
         ("reports", "read"),
+        ("website", "read"),
     ],
     "service_manager": [
         ("inventory", "read"),
@@ -57,6 +62,7 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
     "warehouse": [
         ("inventory", "read"), ("inventory", "write"),
         ("reports", "read"),
+        ("website", "read"),
     ],
 }
 

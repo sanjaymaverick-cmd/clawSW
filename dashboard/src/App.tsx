@@ -4,10 +4,11 @@ import DashboardPage from "./DashboardPage";
 import InventoryPage from "./InventoryPage";
 import Login from "./Login";
 import ServicePage from "./ServicePage";
+import TallyPage from "./TallyPage";
 import UsersPanel from "./UsersPanel";
 
 const TOKEN_KEY = "clawsw_token";
-type Tab = "dashboard" | "overview" | "inventory" | "service" | "users";
+type Tab = "dashboard" | "overview" | "inventory" | "service" | "invoicing" | "users";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() =>
@@ -107,6 +108,7 @@ export default function App() {
               ["overview", "Overview", true],
               ["inventory", "Inventory", can("inventory", "read")],
               ["service", "Service", can("service_jobs", "read")],
+              ["invoicing", "Invoicing", can("invoices", "read")],
               ["users", "Users", can("admin", "read")],
             ] as [Tab, string, boolean][]
           )
@@ -161,6 +163,10 @@ export default function App() {
             canWrite={can("service_jobs", "write")}
             isTechnician={me.role === "technician"}
           />
+        )}
+
+        {tab === "invoicing" && can("invoices", "read") && (
+          <TallyPage token={token} canWrite={can("invoices", "write")} />
         )}
 
         {tab === "users" && can("admin", "read") && (

@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
@@ -247,3 +247,192 @@ class ReportSummary(BaseModel):
     service: ServiceReport | None = None
     financial: FinancialReport | None = None
     people: PeopleReport | None = None
+
+
+# ---- Phase 4: public website ----
+
+ORDER_STATUSES = ("pending", "confirmed", "synced_to_tally")
+BOOKING_STATUSES = ("pending", "confirmed", "cancelled")
+
+
+class CatalogItemOut(BaseModel):
+    """Public projection of `items` for the website catalog.
+
+    Blueprint section 6: only is_spare/is_tool items, only sale-facing
+    fields — internal fields (reorder levels, exact stock counts) stay off
+    the wire; availability is a boolean.
+    """
+
+    id: uuid.UUID
+    sku: str
+    name: str
+    category: str | None
+    unit: str | None
+    price: float
+    is_spare: bool
+    is_tool: bool
+    description: str | None
+    image_path: str | None
+    in_stock: bool
+
+
+class MachineryCreate(BaseModel):
+    name: str = Field(min_length=1)
+    brochure_path: str | None = None
+    category: str | None = None
+    qr_code: str | None = None
+
+
+class MachineryUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1)
+    brochure_path: str | None = None
+    category: str | None = None
+    qr_code: str | None = None
+
+
+class MachineryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    name: str
+    brochure_path: str | None
+    category: str | None
+    qr_code: str | None
+
+
+class PublicMachineryOut(BaseModel):
+    """Public projection of `machinery` — qr_code stays internal."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    name: str
+    brochure_path: str | None
+    category: str | None
+
+
+class CompletedProjectCreate(BaseModel):
+    title: str = Field(min_length=1)
+    description: str | None = None
+    image_paths: list[str] | None = None
+    client_name: str | None = None
+    date_completed: date | None = None
+
+
+class CompletedProjectUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=1)
+    description: str | None = None
+    image_paths: list[str] | None = None
+    client_name: str | None = None
+    date_completed: date | None = None
+
+
+class CompletedProjectOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    title: str
+    description: str | None
+    image_paths: list[str] | None
+    client_name: str | None
+    date_completed: date | None
+
+
+class OrderItemIn(BaseModel):
+    item_id: uuid.UUID
+    quantity: float = Field(gt=0)
+
+
+class WebsiteOrderCreate(BaseModel):
+    customer_name: str = Field(min_length=1)
+    email: EmailStr
+    phone: str | None = None
+    items: list[OrderItemIn] = Field(min_length=1)
+
+
+class WebsiteOrderItemOut(BaseModel):
+    id: uuid.UUID
+    item_id: uuid.UUID
+    sku: str
+    item_name: str
+    quantity: float
+    price_at_order: float
+
+
+class WebsiteOrderOut(BaseModel):
+    id: uuid.UUID
+    customer_name: str
+    email: EmailStr
+    phone: str | None
+    status: str
+    created_at: datetime
+    items: list[WebsiteOrderItemOut]
+    total: float
+
+
+class OrderConfirmRequest(BaseModel):
+    # The warehouse the confirmed order's stock is deducted from.
+    warehouse_id: uuid.UUID
+
+
+class DemoBookingCreate(BaseModel):
+    customer_name: str = Field(min_length=1)
+    email: EmailStr
+    phone: str | None = None
+    machinery_id: uuid.UUID
+    preferred_date: date | None = None
+
+
+class DemoBookingUpdate(BaseModel):
+    status: str = Field(pattern="^(pending|confirmed|cancelled)$")
+
+
+class DemoBookingOut(BaseModel):
+    id: uuid.UUID
+    customer_name: str
+    email: EmailStr
+    phone: str | None
+    machinery_id: uuid.UUID
+    machinery_name: str
+    preferred_date: date | None
+    status: str
+
+
+# ---- Phase 5: Tally sync ----
+
+SYNC_DIRECTIONS = ("to_tally", "from_tally")
+SYNC_STATUSES = ("success", "failed", "payment_received")
+
+
+class TallySyncLogOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    direction: str
+    entity_type: str
+    entity_id: uuid.UUID
+    status: str
+    error_message: str | None
+    synced_at: datetime
+
+
+class TallyStatusOut(BaseModel):
+    gateway_reachable: bool
+    pending_push_count: int
+    synced_order_count: int
+    failed_push_count: int
+    last_push_at: datetime | None
+
+
+class PublicOrderReceipt(BaseModel):
+    """What the public order/booking endpoints return: enough for the
+    customer to reference their request, nothing internal."""
+
+    id: uuid.UUID
+    status: str
+    total: float
+
+
+class PublicBookingReceipt(BaseModel):
+    id: uuid.UUID
+    status: str

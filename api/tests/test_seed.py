@@ -7,14 +7,16 @@ from app.db import SessionLocal
 from app.models import Permission, Role, User
 from app.seed import PERMISSION_MATRIX, ROLE_NAMES, seed
 
-# docs/BLUEPRINT.md section 4, one row per role. Spelled out here
-# independently of app.seed so a typo there cannot self-validate.
+# docs/BLUEPRINT.md section 4, one row per role (including the Website
+# module column added in Phase 4). Spelled out here independently of
+# app.seed so a typo there cannot self-validate.
 BLUEPRINT_MATRIX = {
     "owner": {
         ("inventory", "read"), ("inventory", "write"),
         ("invoices", "read"),
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
+        ("website", "read"), ("website", "write"),
         ("admin", "read"), ("admin", "write"),
     },
     "manager": {
@@ -22,11 +24,13 @@ BLUEPRINT_MATRIX = {
         ("invoices", "read"),
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
+        ("website", "read"), ("website", "write"),
     },
     "accountant": {
         ("inventory", "read"),
         ("invoices", "read"), ("invoices", "write"),
         ("reports", "read"),
+        ("website", "read"),
     },
     "service_manager": {
         ("inventory", "read"),
@@ -40,6 +44,7 @@ BLUEPRINT_MATRIX = {
     "warehouse": {
         ("inventory", "read"), ("inventory", "write"),
         ("reports", "read"),
+        ("website", "read"),
     },
 }
 
@@ -50,7 +55,8 @@ GATES_IN_USE = {
     ("service_jobs", "read"), ("service_jobs", "write"),
     ("admin", "read"), ("admin", "write"),
     ("reports", "read"),
-    ("invoices", "read"),
+    ("invoices", "read"), ("invoices", "write"),
+    ("website", "read"), ("website", "write"),
 }
 
 
