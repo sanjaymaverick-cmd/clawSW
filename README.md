@@ -51,6 +51,7 @@ every build session.
 | 5 | Tally sync | **done** |
 | 6 | Audit + hardening | **done** |
 | 7 | AI query layer (optional) | **done** |
+| 8 | Mock/demo dataset | **done** |
 | 9 | Login rate limiting + website-orders dashboard | **done** |
 
 ## Running it
@@ -118,6 +119,28 @@ database:
 ```bash
 docker compose run --rm backup /scripts/restore.sh /backups/clawsw-<stamp>.sql.gz.enc
 ```
+
+### Mock/demo dataset (Phase 8)
+
+For rehearsals and demos — not real business data — the API can seed a full
+fictional dataset on startup: items (spares + tools), two warehouses with
+stock levels, machinery with placeholder brochures + QR codes, service jobs
+across every status with parts used, completed projects, website orders
+across every status with line items, demo bookings, and **one login per
+non-owner role** (manager, accountant, service_manager, technician,
+warehouse) so all six role-dashboards can be exercised end-to-end.
+
+It lives in `api/app/seed_demo.py`, separate from the always-on `seed.py`,
+and is gated behind `SEED_DEMO_DATA` so it never touches a real deployment:
+
+```bash
+SEED_DEMO_DATA=true            # off by default; set only on a demo instance
+SEED_DEMO_PASSWORD=demo-password   # shared password for the seeded logins
+```
+
+Like `seed.py` it is idempotent, so a demo box can keep the flag set across
+reboots without duplicating rows. The real Excel/Tally data migration is a
+separate later project, not this fixture.
 
 ### Login rate limiting & website orders (Phase 9)
 
