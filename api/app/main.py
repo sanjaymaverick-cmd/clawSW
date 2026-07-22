@@ -27,6 +27,7 @@ from .routers import (
 )
 from .security import decode_access_token
 from .seed import seed
+from .seed_demo import seed_demo
 
 logging.basicConfig(level=logging.INFO)
 
@@ -49,6 +50,9 @@ async def lifespan(app: FastAPI):
     run_migrations()
     with SessionLocal() as db:
         seed(db)
+        # Phase 8: only fills the demo dataset when SEED_DEMO_DATA is set;
+        # a no-op otherwise, so it never touches a real deployment.
+        seed_demo(db)
     yield
 
 

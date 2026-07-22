@@ -28,6 +28,11 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:?set ADMIN_EMAIL in .env}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://localhost:3000}
+      # Mock/demo dataset (Phase 8). Leave off for real deployments; set true
+      # only on a rehearsal/demo box to seed fictional data + one login per
+      # non-owner role. Idempotent, so safe to leave set across reboots.
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+      SEED_DEMO_PASSWORD: ${SEED_DEMO_PASSWORD:-demo-password}
       # AI query layer (Phase 7). Server-side only: the key is given to the
       # api container exclusively — never to the dashboard/website builds.
       # Leave empty to run with AI queries disabled.
