@@ -14,6 +14,15 @@ class Settings(BaseSettings):
     admin_email: str = "owner@clawsw.example"
     admin_password: str = "change-me"
 
+    # ---- Mock/demo dataset (Phase 8) ----
+    # Off by default so seed_demo.py never runs against a real deployment.
+    # Set SEED_DEMO_DATA=true only on a rehearsal/demo instance; it fills the
+    # database with fictional items, warehouses, machinery, service jobs,
+    # website orders, demo bookings, and one login per non-owner role.
+    seed_demo_data: bool = False
+    # Shared password for every seeded demo login (rehearsal fixture only).
+    seed_demo_password: str = "demo-password"
+
     cors_origins: str = "http://localhost:8080,http://localhost:3000,http://localhost:5173"
 
     # ---- Tally bridge (Phase 5) ----
