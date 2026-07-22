@@ -14,6 +14,7 @@ from .audit import audit_context
 from .config import settings
 from .db import SessionLocal, engine
 from .routers import (
+    ai_query,
     audit,
     auth,
     inventory,
@@ -96,6 +97,7 @@ app.include_router(public.router)
 app.include_router(website.router)
 app.include_router(tally.router)
 app.include_router(audit.router)
+app.include_router(ai_query.router)
 
 
 @app.get("/health")

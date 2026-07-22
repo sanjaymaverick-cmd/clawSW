@@ -29,6 +29,15 @@ class Settings(BaseSettings):
     # How often the bridge worker pushes confirmed orders / pulls payments.
     tally_sync_interval_seconds: int = 60
 
+    # ---- AI query layer (Phase 7) ----
+    # Server-side only: read from the environment here and used inside
+    # app/ai_query.py exclusively — never returned by any endpoint, so it
+    # cannot reach the dashboard or website bundles. Empty = AI disabled.
+    anthropic_api_key: str = ""
+    # Pinned per the current model docs; adjust via env var as models evolve.
+    anthropic_model: str = "claude-opus-4-8"
+    anthropic_max_tokens: int = 1024
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

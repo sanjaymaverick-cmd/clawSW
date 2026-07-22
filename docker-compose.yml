@@ -28,6 +28,11 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:?set ADMIN_EMAIL in .env}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://localhost:3000}
+      # AI query layer (Phase 7). Server-side only: the key is given to the
+      # api container exclusively — never to the dashboard/website builds.
+      # Leave empty to run with AI queries disabled.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-4-8}
     depends_on:
       db:
         condition: service_healthy

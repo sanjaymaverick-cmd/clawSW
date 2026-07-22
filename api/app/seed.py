@@ -26,8 +26,21 @@ ROLE_NAMES = [
 ]
 
 # role -> list of (resource, action), encoding the BLUEPRINT.md section-4
-# matrix including its Website module column (Phase 4). Like everything
-# else these are table rows, adjustable without code changes.
+# matrix including its Website module column (Phase 4) and the ai_query
+# resource (Phase 7). Like everything else these are table rows,
+# adjustable without code changes.
+#
+# ai_query (Phase 7): 'read' means "may ask questions" — asking pulls
+# cross-module aggregates (inventory + service + website counts/sums), so
+# it is granted only to the two roles whose reports access already spans
+# every module: owner and manager. Accountant/service_manager/warehouse
+# see department-scoped reports only, and the AI classifier could pull
+# aggregates from outside their department, so they are excluded until
+# there is per-section scoping. No role gets ('ai_query', 'write'):
+# the module has no write surface (its configuration lives in env vars),
+# so a write grant would be a dormant permission waiting to be misread.
+# The financial section is further gated in code to owner + an explicit
+# per-request opt-in (see app/ai_query.py).
 PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
     "owner": [
         ("inventory", "read"), ("inventory", "write"),
@@ -36,6 +49,7 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
         ("reports", "read"),
         ("website", "read"), ("website", "write"),
         ("admin", "read"), ("admin", "write"),
+        ("ai_query", "read"),
     ],
     "manager": [
         ("inventory", "read"), ("inventory", "write"),
@@ -43,6 +57,7 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
         ("website", "read"), ("website", "write"),
+        ("ai_query", "read"),
     ],
     "accountant": [
         ("inventory", "read"),

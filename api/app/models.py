@@ -254,7 +254,8 @@ class TallySyncLog(Base):
 
 class AuditLog(Base):
     """Written automatically by app/audit.py on every flush that touches an
-    audited table — never inserted by route handlers directly."""
+    audited table, plus explicit boundary events via audit.record_event()
+    (e.g. AI queries) — never constructed in route handlers directly."""
 
     __tablename__ = "audit_log"
 
