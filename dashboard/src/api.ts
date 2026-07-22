@@ -290,6 +290,12 @@ export const api = {
       `/website/orders${status ? `?status_filter=${status}` : ""}`,
       { token },
     ),
+  confirmWebsiteOrder: (token: string, orderId: string, warehouseId: string) =>
+    request<WebsiteOrder>(`/website/orders/${orderId}/confirm`, {
+      method: "POST",
+      body: { warehouse_id: warehouseId },
+      token,
+    }),
   tallyStatus: (token: string) => request<TallyStatus>("/tally/status", { token }),
   tallySyncLog: (token: string) =>
     request<TallySyncLogEntry[]>("/tally/sync-log", { token }),

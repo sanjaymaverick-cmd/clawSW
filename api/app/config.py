@@ -25,6 +25,14 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:8080,http://localhost:3000,http://localhost:5173"
 
+    # ---- Login rate limiting (Phase 9) ----
+    # Brute-force lockout on /auth/login, keyed by (email, client IP). After
+    # this many consecutive failures the pair is locked out for the window
+    # below. State lives in the login_attempts table so it survives restarts
+    # and is shared across API workers.
+    login_max_attempts: int = 5
+    login_lockout_minutes: int = 15
+
     # ---- Tally bridge (Phase 5) ----
     # Tally Prime's XML-over-HTTP gateway ("Enable ODBC/XML Server" in Tally),
     # reachable on the LAN. Point at a SANDBOX company file first.

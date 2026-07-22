@@ -8,6 +8,8 @@ Phase 4: completed_projects, website_orders, website_order_items,
          demo_bookings
 Phase 5: tally_sync_log
 Phase 6: audit_log
+Phase 9: login_attempts (brute-force lockout state — not in the blueprint's
+         section-5 schema; added to close the login rate-limiting gap)
 """
 import uuid
 from datetime import date, datetime, timezone
@@ -272,6 +274,28 @@ class AuditLog(Base):
     )
 
     user: Mapped[User | None] = relationship()
+
+
+class LoginAttempt(Base):
+    """Phase 9 — brute-force lockout state for /auth/login, one row per
+    (email, client IP). Written by app/ratelimit.py, never a business
+    record, so it is deliberately NOT one of the audited tables — it churns
+    on every failed login and carries no data worth an audit trail."""
+
+    __tablename__ = "login_attempts"
+    __table_args__ = (UniqueConstraint("email", "ip_address"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    # Email is lowercased and IP defaults to 'unknown' before storage so the
+    # (email, ip_address) key is stable and never NULL.
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+    ip_address: Mapped[str] = mapped_column(Text, nullable=False)
+    failed_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # Set once failed_count crosses the threshold; NULL means not locked.
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
 
 
 class DemoBooking(Base):
