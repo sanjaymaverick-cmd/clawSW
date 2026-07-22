@@ -1,0 +1,53 @@
+name: CI
+
+# One job, one monolith: install the API's deps and run the full pytest
+# suite against a real Postgres, matching the single-service philosophy in
+# the blueprint. No build/deploy steps, no test matrix.
+on:
+  push:
+    branches: [claude/clawsw-build-plan-architecture-8lrv6p]
+  pull_request:
+    branches: [claude/clawsw-build-plan-architecture-8lrv6p]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Same Postgres major version the app ships with in docker-compose.yml.
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_DB: clawsw
+          POSTGRES_USER: clawsw
+          POSTGRES_PASSWORD: clawsw
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clawsw -d clawsw"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql+psycopg://clawsw:clawsw@localhost:5432/clawsw
+
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches api/Dockerfile (python:3.11-slim).
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: api/requirements-dev.txt
+
+      - name: Install API dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run test suite
+        run: pytest -v
