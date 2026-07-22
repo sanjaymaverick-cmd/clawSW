@@ -50,7 +50,8 @@ every build session.
 | 4 | Public website | **done** |
 | 5 | Tally sync | **done** |
 | 6 | Audit + hardening | **done** |
-| 7 | AI query layer (optional) | not started |
+| 7 | AI query layer (optional) | **done** |
+| 9 | Login rate limiting + website-orders dashboard | **done** |
 
 ## Running it
 
@@ -117,6 +118,26 @@ database:
 ```bash
 docker compose run --rm backup /scripts/restore.sh /backups/clawsw-<stamp>.sql.gz.enc
 ```
+
+### Login rate limiting & website orders (Phase 9)
+
+**Login lockout.** `/auth/login` is brute-force protected: after
+`LOGIN_MAX_ATTEMPTS` consecutive failures for a given (email, client IP)
+pair, that pair is locked out for `LOGIN_LOCKOUT_MINUTES` (defaults 5 /
+15). While locked, even the correct password is refused with `429` and a
+`Retry-After` header. State lives in the `login_attempts` table (one row
+per email+IP) so the lockout survives restarts and is shared across API
+workers; a successful login clears the counter. Keying on email **and**
+IP means one attacker can't lock the real user out from another address,
+while a single host guessing passwords still trips the limit.
+
+**Website-orders dashboard.** The **Website** tab lists incoming website
+orders and lets staff confirm pending ones — replacing the earlier
+`/docs`-only workaround. Confirming picks a warehouse, deducts stock, and
+writes a `website_order` stock move (the existing Phase 4 endpoint).
+Visibility follows the `website` permission: Owner/Manager can confirm
+(read+write), Accountant/Warehouse see it read-only, and
+Service Manager/Technician have no access.
 
 ### Repo layout
 

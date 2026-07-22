@@ -7,6 +7,7 @@ import Login from "./Login";
 import ServicePage from "./ServicePage";
 import TallyPage from "./TallyPage";
 import UsersPanel from "./UsersPanel";
+import WebsitePage from "./WebsitePage";
 
 const TOKEN_KEY = "clawsw_token";
 type Tab =
@@ -15,6 +16,7 @@ type Tab =
   | "inventory"
   | "service"
   | "invoicing"
+  | "website"
   | "users"
   | "audit";
 
@@ -117,6 +119,7 @@ export default function App() {
               ["inventory", "Inventory", can("inventory", "read")],
               ["service", "Service", can("service_jobs", "read")],
               ["invoicing", "Invoicing", can("invoices", "read")],
+              ["website", "Website", can("website", "read")],
               ["users", "Users", can("admin", "read")],
               ["audit", "Audit", can("admin", "read")],
             ] as [Tab, string, boolean][]
@@ -176,6 +179,10 @@ export default function App() {
 
         {tab === "invoicing" && can("invoices", "read") && (
           <TallyPage token={token} canWrite={can("invoices", "write")} />
+        )}
+
+        {tab === "website" && can("website", "read") && (
+          <WebsitePage token={token} canWrite={can("website", "write")} />
         )}
 
         {tab === "users" && can("admin", "read") && (
