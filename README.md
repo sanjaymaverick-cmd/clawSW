@@ -200,8 +200,40 @@ stack up, or the ACME challenge can't complete. No domain to hand?
 
 Because the local port mappings (`8000`, `8080`, `3000`) stay published, on a
 public host the apps are also reachable over plain HTTP on those ports,
-bypassing Caddy. Close them at the VPS firewall (allow only `80`/`443`, plus
-SSH) so all real traffic goes through TLS.
+bypassing Caddy. Close that gap by running
+[`scripts/harden_firewall.sh`](scripts/harden_firewall.sh) **once** on the VPS,
+passing the public interface name:
+
+```bash
+sudo ./scripts/harden_firewall.sh eth0    # use the host's real public NIC
+```
+
+It adds `DROP` rules for tcp `8000`/`8080`/`3000` arriving on that interface, so
+Caddy on `80`/`443` becomes the only intended public entry point. The rules go
+in Docker's **`DOCKER-USER`** iptables chain, not a plain `ufw deny`: Docker
+steers traffic to published container ports through its own rules *before* the
+INPUT chain ufw manages, so a `ufw deny 8000` never sees that traffic — only a
+rule in `DOCKER-USER` (which Docker evaluates first) actually blocks it. The
+rules are scoped to the public interface, so Caddy → app-container traffic over
+the internal docker network is untouched.
+
+> **Persistence caveat.** That command changes the *live* firewall only — the
+> rules are lost on reboot. To make them survive restarts they must live in
+> `/etc/ufw/after.rules` under the `*filter` table's `DOCKER-USER` chain (a
+> plain `ufw allow`/`deny` line will **not** work, for the Docker reason above),
+> e.g.:
+>
+> ```
+> *filter
+> :DOCKER-USER - [0:0]
+> -A DOCKER-USER -i eth0 -p tcp --dport 8000 -j DROP
+> -A DOCKER-USER -i eth0 -p tcp --dport 8080 -j DROP
+> -A DOCKER-USER -i eth0 -p tcp --dport 3000 -j DROP
+> COMMIT
+> ```
+>
+> then `sudo ufw reload`. (Simplest for a throwaway rehearsal box: just re-run
+> the script after a reboot.)
 
 **What changes in `.env` for a remote host vs. local.** Start from
 `.env.example` as always, then:
@@ -249,7 +281,7 @@ cloud rehearsal box.
 api/        FastAPI backend — auth, RBAC (permissions table), users admin
 dashboard/  React + Vite + Tailwind internal dashboard
 website/    Next.js public site — catalog, brochures, projects, demo booking
-scripts/    encrypted backup cron + restore (Phase 6)
+scripts/    encrypted backup cron + restore (Phase 6); firewall hardening (Phase 10)
 docs/       BLUEPRINT.md — architecture & build plan (source of truth)
 Caddyfile   reverse proxy + automatic HTTPS for remote deploys (Phase 10)
 ```
