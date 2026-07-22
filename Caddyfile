@@ -1,0 +1,42 @@
+# Caddyfile — reverse proxy + automatic HTTPS for a clawSW rehearsal deploy
+# (Phase 10). Only used on a remote/internet-reachable host; a purely local
+# `docker compose up` still reaches the services on their published ports and
+# does not need Caddy at all.
+#
+# Caddy obtains and renews a Let's Encrypt certificate for each domain below,
+# terminates TLS, and reverse-proxies to the app containers over the internal
+# compose network — so the browser only ever talks HTTPS to Caddy. Domains and
+# the ACME contact address come from .env, so this file is identical on every
+# host; set WEBSITE_DOMAIN / DASHBOARD_DOMAIN / API_DOMAIN / CADDY_ACME_EMAIL
+# there.
+#
+# Before `docker compose up`: point all three names at the VPS's public IP in
+# DNS, or the ACME HTTP/TLS challenge can't complete and no certificate is
+# issued. For an IP-only rehearsal (no domain), see the README note on sslip.io
+# and `tls internal`.
+{
+	# Contact address Let's Encrypt uses for expiry/renewal notices. Optional
+	# but recommended; leave CADDY_ACME_EMAIL empty to register anonymously.
+	email {$CADDY_ACME_EMAIL}
+}
+
+# Public website (Next.js). The server-rendered pages talk to the API over the
+# compose network; the browser bundle calls API_DOMAIN cross-origin, so that
+# origin must be listed in CORS_ORIGINS.
+{$WEBSITE_DOMAIN} {
+	reverse_proxy website:3000
+}
+
+# Internal dashboard (React served by nginx). nginx already proxies the
+# dashboard's own /api/ calls to the API container, so those stay same-origin
+# and need no CORS entry.
+{$DASHBOARD_DOMAIN} {
+	reverse_proxy dashboard:80
+}
+
+# API (FastAPI). Reached directly by the website's browser bundle and by
+# anyone hitting /docs; the app services never need to be exposed to the
+# internet on their own ports once Caddy is in front.
+{$API_DOMAIN} {
+	reverse_proxy api:8000
+}
