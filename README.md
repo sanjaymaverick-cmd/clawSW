@@ -171,7 +171,15 @@ internet-reachable, with real staff logins even though the underlying data is
 still the Phase 8 mock fixture — the `caddy` service puts a reverse proxy with
 automatic HTTPS in front of the website, dashboard, and API. Nothing else in
 `docker-compose.yml` changes; it's the same `git clone` → `cp .env.example .env`
-→ `docker compose up --build` as local.
+→ set the values below → bring the stack up **with the `remote` profile**:
+
+```bash
+docker compose --profile remote up --build
+```
+
+The `caddy` service is gated behind that `remote` compose profile, so the plain
+local quick-start (`docker compose up`) never starts it — only a deliberate
+remote bring-up does.
 
 **Caddy.** [`Caddyfile`](Caddyfile) defines three site blocks — website,
 dashboard, API — each reverse-proxying to its container over the compose

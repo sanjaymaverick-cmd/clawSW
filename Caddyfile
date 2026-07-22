@@ -14,7 +14,6 @@
 # DNS, or the ACME HTTP/TLS challenge can't complete and no certificate is
 # issued. For an IP-only rehearsal (no domain), see the README note on sslip.io
 # and `tls internal`.
-
 {
 	# Contact address Let's Encrypt uses for expiry/renewal notices. Optional
 	# but recommended; leave CADDY_ACME_EMAIL empty to register anonymously.
