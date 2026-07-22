@@ -53,6 +53,7 @@ every build session.
 | 7 | AI query layer (optional) | **done** |
 | 8 | Mock/demo dataset | **done** |
 | 9 | Login rate limiting + website-orders dashboard | **done** |
+| 10 | Rehearsal deployment config (Caddy reverse proxy + TLS) | **done** |
 
 ## Running it
 
@@ -162,6 +163,78 @@ Visibility follows the `website` permission: Owner/Manager can confirm
 (read+write), Accountant/Warehouse see it read-only, and
 Service Manager/Technician have no access.
 
+### Remote-host deployment — Caddy reverse proxy + TLS (Phase 10)
+
+The local quick-start above serves the three apps over plain HTTP on their
+published ports. For a **rehearsal deployment on a plain Ubuntu VPS** —
+internet-reachable, with real staff logins even though the underlying data is
+still the Phase 8 mock fixture — the `caddy` service puts a reverse proxy with
+automatic HTTPS in front of the website, dashboard, and API. Nothing else in
+`docker-compose.yml` changes; it's the same `git clone` → `cp .env.example .env`
+→ `docker compose up --build` as local.
+
+**Caddy.** [`Caddyfile`](Caddyfile) defines three site blocks — website,
+dashboard, API — each reverse-proxying to its container over the compose
+network. Caddy obtains and renews a Let's Encrypt certificate per domain,
+terminates TLS, and speaks HTTPS to the browser; the app containers never need
+to face the internet on their own ports. The domains and ACME email come from
+`.env` (`WEBSITE_DOMAIN`, `DASHBOARD_DOMAIN`, `API_DOMAIN`, `CADDY_ACME_EMAIL`),
+so the Caddyfile is identical on every host. Issued certs and the ACME account
+persist in `./caddy/data` (gitignored) so restarts don't re-request certs and
+trip Let's Encrypt's rate limits.
+
+Point each domain's DNS **A record at the VPS's public IP before** bringing the
+stack up, or the ACME challenge can't complete. No domain to hand?
+- Use a [sslip.io](https://sslip.io) name that encodes the IP, e.g.
+  `dashboard.203-0-113-5.sslip.io` — Let's Encrypt issues real certs for those.
+- Or add `tls internal` to each site block for a self-signed cert (browsers
+  show a warning) — fine for a throwaway rehearsal.
+
+Because the local port mappings (`8000`, `8080`, `3000`) stay published, on a
+public host the apps are also reachable over plain HTTP on those ports,
+bypassing Caddy. Close them at the VPS firewall (allow only `80`/`443`, plus
+SSH) so all real traffic goes through TLS.
+
+**What changes in `.env` for a remote host vs. local.** Start from
+`.env.example` as always, then:
+
+- **Freshly generate the three secrets** — do not ship the `.env.example`
+  placeholders to an internet-reachable box:
+  ```bash
+  openssl rand -hex 32   # JWT_SECRET
+  openssl rand -hex 32   # POSTGRES_PASSWORD
+  openssl rand -hex 32   # BACKUP_PASSPHRASE
+  ```
+  Also set a strong `ADMIN_PASSWORD`.
+- **`PUBLIC_API_URL`** → the API's real HTTPS URL instead of
+  `http://localhost:8000`, e.g. `https://api.example.com`. It's baked into the
+  website's browser bundle at build time, so it must be the address the browser
+  can actually reach.
+- **`CORS_ORIGINS`** → the real front-end origins instead of the `localhost`
+  defaults, e.g. `https://example.com,https://dashboard.example.com`. The
+  website's browser bundle calls the API cross-origin, so its origin must be
+  listed here; the dashboard's nginx proxies its own `/api/` calls, so those
+  stay same-origin and don't need an entry (listing it is harmless).
+- **`WEBSITE_DOMAIN` / `DASHBOARD_DOMAIN` / `API_DOMAIN` / `CADDY_ACME_EMAIL`**
+  → the three real hostnames and your contact email (Caddy-only; blank locally).
+- **`TALLY_URL`** → leave it pointed at nothing reachable. A cloud VPS has no
+  line of sight to the Tally machine on your LAN, and that's expected here: the
+  `tally-bridge` worker guards every cycle, so an unreachable (or unset) gateway
+  is **logged and retried on the next tick, never fatal** — the push path
+  commits the failure to `tally_sync_log` and the pull path logs a warning,
+  neither raises (`api/app/tally_worker.py`, `api/app/tally.py`). The bridge
+  keeps running harmlessly with Tally offline; nothing else is blocked. This
+  behavior is unchanged in Phase 10 — only confirmed and relied upon.
+- **`BACKUP_DIR`** → point at whatever block storage the host provides (e.g. an
+  attached volume). For this rehearsal the backup is **disposable**: the data is
+  the mock fixture, not production, so a lost or wiped backup disk costs nothing.
+  This is deliberately *not* the hardened second-disk backup path described
+  above for the eventual real deployment — treat it as throwaway.
+
+**Not in this phase.** Tally-sandbox validation stays blocked on physical/LAN
+access to the Tally machine and happens later, on the real mini PC — not on the
+cloud rehearsal box.
+
 ### Repo layout
 
 ```
@@ -170,6 +243,7 @@ dashboard/  React + Vite + Tailwind internal dashboard
 website/    Next.js public site — catalog, brochures, projects, demo booking
 scripts/    encrypted backup cron + restore (Phase 6)
 docs/       BLUEPRINT.md — architecture & build plan (source of truth)
+Caddyfile   reverse proxy + automatic HTTPS for remote deploys (Phase 10)
 ```
 
 ### Development without Docker

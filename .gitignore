@@ -23,6 +23,8 @@ build/
 # Docker / data volumes
 pgdata/
 backups/
+caddy/data/
+caddy/config/
 *.log
 *.db
 

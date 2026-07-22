@@ -113,3 +113,33 @@ services:
       - api
     ports:
       - "3000:3000"
+
+  # Reverse proxy + automatic HTTPS (Phase 10) in front of website/dashboard/
+  # api. Only needed for a remote, internet-reachable rehearsal deploy — on a
+  # purely local box you reach the services on their published ports directly
+  # and can leave this service stopped. Caddy fetches/renews Let's Encrypt
+  # certs for the domains in .env, terminates TLS, and proxies to the app
+  # containers over the compose network (see ./Caddyfile).
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Persist issued certificates + the ACME account across restarts so Caddy
+      # doesn't re-request certs on every boot (Let's Encrypt rate-limits).
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+    environment:
+      # Consumed by ./Caddyfile via {$VAR}. Leave unset on a local-only box.
+      CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL:-}
+      WEBSITE_DOMAIN: ${WEBSITE_DOMAIN:-}
+      DASHBOARD_DOMAIN: ${DASHBOARD_DOMAIN:-}
+      API_DOMAIN: ${API_DOMAIN:-}
+    depends_on:
+      - api
+      - dashboard
+      - website
