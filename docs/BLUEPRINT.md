@@ -99,6 +99,14 @@ website orders (confirming an order deducts stock), and demo bookings.
 Owner and Manager manage it; Accountant and Warehouse see incoming orders
 read-only.
 
+AI query resource (added in Phase 7): `('ai_query', 'read')` = may ask
+natural-language questions via `/ai-query`. Granted to Owner and Manager
+only — asking pulls cross-module aggregates, so it tracks the two roles
+whose reports access already spans every module. No `write` action exists
+(the module has no write surface; its config lives in env vars). The
+financial section of a query is further gated in code to owner + an
+explicit per-request opt-in flag; customer PII never leaves regardless.
+
 Enforcement: every API route checks `role` + `resource` + `action` against a
 permissions table (not hardcoded if/else) so you can adjust access later
 without touching code — this becomes a `permissions` table in the schema below.
@@ -222,39 +230,96 @@ more valuable than any AI feature.
 
 ## 7. Build Phases (for Claude Code sessions)
 
-**Phase 0 — Scaffolding**
+**Phase 0 — Scaffolding** — done
 - Docker Compose: Postgres + FastAPI + React dashboard + Next.js site, all
   networked locally.
 - Auth: users/roles/permissions tables, login, JWT middleware.
 
-**Phase 1 — Inventory core**
+**Phase 1 — Inventory core** — done
 - Items, warehouses, stock_levels, stock_moves CRUD + role-gated endpoints.
 - Basic internal dashboard: inventory table, stock adjust form.
 
-**Phase 2 — Service module**
+**Phase 2 — Service module** — done
 - service_jobs, job_parts_used, technician assignment, status flow.
 - Technician view (mobile-friendly): only their assigned jobs.
 
-**Phase 3 — Role dashboards**
+**Phase 3 — Role dashboards** — done
 - CEO dashboard: aggregated view across all modules.
 - Manager/Accountant/Warehouse views scoped per permissions table.
 
-**Phase 4 — Public website**
+**Phase 4 — Public website** — done
 - Product/spares catalog page, machinery brochures, completed projects gallery.
 - Order flow → `website_orders`, demo booking form.
 
-**Phase 5 — Tally sync**
+**Phase 5 — Tally sync** — done
 - Build the XML bridge worker, test with a handful of real invoices in a Tally
   sandbox company file before pointing at production data.
 
-**Phase 6 — Audit + hardening**
+**Phase 6 — Audit + hardening** — done
 - Wire up audit_log triggers, test the "can a technician see accountant data"
   scenario directly, encrypt backups, set up a basic backup cron to a second
   local disk.
 
-**Phase 7 (optional) — AI query layer**
-- Only after core is stable. Build the sanitization boundary first, then the
-  Claude API call.
+**Phase 7 — AI query layer** — done
+- Build the sanitization boundary first, then the Claude API call. Not
+  required for the v1 rehearsal deployment below, but built next per
+  explicit choice — Phases 8-10 follow it.
+- Separate `/ai-query` endpoint: (1) determines what tables the question
+  touches, (2) pulls only the minimum aggregated data needed, (3) sends
+  that summarized context + question to the Claude API, never raw
+  customer/financial rows unless the user is owner/CEO and explicitly
+  requests it.
+- Gated by its own `resource='ai_query'` row in the permissions table —
+  same DB-driven enforcement as everything else, not a special case.
+- API key lives server-side only (env var), never reaches the dashboard or
+  website bundles.
+
+**Phase 8 — Mock/demo dataset**
+- New `seed_demo.py`, gated behind an env flag (`SEED_DEMO_DATA=true`) so it
+  never runs against a real deployment; keep it out of the startup path that
+  `seed.py` runs on every boot.
+- Items (mix of `is_spare`/`is_tool`), 2 warehouses, `stock_levels` for each
+  item/warehouse pair.
+- A handful of `machinery` rows with placeholder brochure paths + QR codes.
+- `service_jobs` covering every status (open/in_progress/completed/billed),
+  with `job_parts_used` rows against seeded items.
+- `completed_projects` entries for the website gallery.
+- `website_orders` covering every status (pending/confirmed/synced_to_tally)
+  with `website_order_items`, plus a few `demo_bookings`.
+- One login per remaining role — manager, accountant, service_manager,
+  technician, warehouse — so all six role-dashboards can be exercised
+  end-to-end (only `owner` is seeded today).
+- This mock data is explicitly a rehearsal fixture, not real business data —
+  the real Excel/Tally migration is a separate later project (v2/v3), not
+  part of this phase.
+
+**Phase 9 — Close known gaps**
+- Login rate-limiting on `/auth/login` (lockout after N failed attempts,
+  keyed by email + IP).
+- Dashboard page for staff to list and confirm pending `website_orders`
+  (replaces the current `/docs`-only workaround from Phase 4).
+
+**Phase 10 — Rehearsal deployment config**
+- `.env` for the target host: freshly generated `JWT_SECRET`,
+  `POSTGRES_PASSWORD`, `BACKUP_PASSPHRASE` (not the `.env.example`
+  placeholders); `PUBLIC_API_URL` and `CORS_ORIGINS` set to the host's real
+  address instead of `localhost`.
+- Reverse proxy + TLS in front of `dashboard`/`website`/`api` — Caddy is the
+  low-friction choice (automatic Let's Encrypt off a short Caddyfile) since
+  this will be internet-reachable with real staff logins even though the
+  underlying data is mock.
+- `TALLY_URL` left pointed at nothing for this deployment — the bridge
+  worker already logs-and-retries on failure without crashing, so it's safe
+  to run with Tally unreachable until back on the LAN. Tally-sandbox
+  validation stays blocked on physical/LAN access and happens later, on the
+  real mini PC.
+- `BACKUP_DIR` mounted to whatever block storage the host provides; treat
+  this backup as disposable — it's mock data, not the hardened path used
+  for the eventual real deployment.
+- Target: a plain Ubuntu VPS running the existing `docker-compose.yml`
+  unmodified (DigitalOcean Bangalore droplet, 2 vCPU/4GB, or Hetzner Cloud
+  as the cheaper EU-only alternative) — `git clone`, `cp .env.example .env`,
+  `docker compose up --build`, same as the local README.
 
 ---
 
@@ -263,3 +328,5 @@ more valuable than any AI feature.
 Feed it this file plus one phase at a time — don't ask it to build everything
 at once. Start each session with: "Here's the blueprint (attached), build
 Phase X only, matching this schema exactly."
+
+Phases 0–7 are built and tested. Phases 8–10 are next.

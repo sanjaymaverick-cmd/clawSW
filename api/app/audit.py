@@ -91,6 +91,35 @@ def _audit_rows(session: Session) -> list[dict]:
     return rows
 
 
+def record_event(
+    session: Session,
+    *,
+    action: str,
+    resource: str,
+    resource_id: uuid.UUID,
+    payload_snapshot: dict,
+) -> None:
+    """Explicit audit entry for events that are not table writes.
+
+    The flush listener below only covers AUDITED_MODELS; this is for
+    boundary events that must be reconstructable later — e.g. the Phase 7
+    AI query layer records the question and the exact aggregate payload
+    sent to the Claude API. Uses the same request actor context, and the
+    caller's commit/rollback applies to it like any other pending write.
+    """
+    user_id, ip_address = _actor.get()
+    session.add(
+        AuditLog(
+            user_id=user_id,
+            action=action,
+            resource=resource,
+            resource_id=resource_id,
+            ip_address=ip_address,
+            payload_snapshot=payload_snapshot,
+        )
+    )
+
+
 @event.listens_for(Session, "after_flush")
 def _write_audit_rows(session: Session, _flush_context) -> None:
     rows = _audit_rows(session)

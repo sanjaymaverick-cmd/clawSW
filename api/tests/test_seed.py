@@ -8,8 +8,9 @@ from app.models import Permission, Role, User
 from app.seed import PERMISSION_MATRIX, ROLE_NAMES, seed
 
 # docs/BLUEPRINT.md section 4, one row per role (including the Website
-# module column added in Phase 4). Spelled out here independently of
-# app.seed so a typo there cannot self-validate.
+# module column added in Phase 4 and the ai_query resource added in
+# Phase 7 — owner + manager, read only). Spelled out here independently
+# of app.seed so a typo there cannot self-validate.
 BLUEPRINT_MATRIX = {
     "owner": {
         ("inventory", "read"), ("inventory", "write"),
@@ -18,6 +19,7 @@ BLUEPRINT_MATRIX = {
         ("reports", "read"),
         ("website", "read"), ("website", "write"),
         ("admin", "read"), ("admin", "write"),
+        ("ai_query", "read"),
     },
     "manager": {
         ("inventory", "read"), ("inventory", "write"),
@@ -25,6 +27,7 @@ BLUEPRINT_MATRIX = {
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
         ("website", "read"), ("website", "write"),
+        ("ai_query", "read"),
     },
     "accountant": {
         ("inventory", "read"),
@@ -57,6 +60,7 @@ GATES_IN_USE = {
     ("reports", "read"),
     ("invoices", "read"), ("invoices", "write"),
     ("website", "read"), ("website", "write"),
+    ("ai_query", "read"),
 }
 
 

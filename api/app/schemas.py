@@ -451,3 +451,20 @@ class PublicOrderReceipt(BaseModel):
 class PublicBookingReceipt(BaseModel):
     id: uuid.UUID
     status: str
+
+
+# ---- Phase 7: AI query ----
+
+class AiQueryRequest(BaseModel):
+    question: str = Field(min_length=3, max_length=2000)
+    # Financial aggregates are only sent when this is True AND the caller
+    # is the owner — enforced in app/ai_query.py, not just here.
+    include_financial: bool = False
+
+
+class AiQueryResponse(BaseModel):
+    answer: str
+    # Which aggregate sections were sent to the model, so the dashboard
+    # can show "this used aggregated inventory + service_jobs data".
+    resources_used: list[str]
+    financial_included: bool
