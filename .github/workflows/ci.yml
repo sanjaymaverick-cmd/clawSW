@@ -30,7 +30,9 @@ jobs:
           --health-retries 10
 
     env:
-      DATABASE_URL: postgresql+psycopg://clawsw:clawsw@localhost:5432/clawsw
+      # Points the pytest suite (see api/tests/conftest.py) at the Postgres
+      # service above instead of the default in-memory SQLite.
+      TEST_DATABASE_URL: postgresql+psycopg://clawsw:clawsw@localhost:5432/clawsw
 
     defaults:
       run:
