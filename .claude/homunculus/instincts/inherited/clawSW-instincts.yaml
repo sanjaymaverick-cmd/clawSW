@@ -1,0 +1,398 @@
+# Instincts generated from https://github.com/sanjaymaverick-cmd/clawSW
+# Generated: 2026-07-22T04:42:55.866Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: clawSW-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/sanjaymaverick-cmd/clawSW
+---
+
+# ClawSW Commit Length
+
+## Action
+
+Keep commit messages concise (~36 characters)
+
+## Evidence
+
+- Average commit message length: 36 chars
+- Based on 3 commits
+
+---
+id: clawSW-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/sanjaymaverick-cmd/clawSW
+---
+
+# ClawSW Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: clawSW-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/sanjaymaverick-cmd/clawSW
+---
+
+# ClawSW Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: clawSW-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/sanjaymaverick-cmd/clawSW
+---
+
+# ClawSW Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: clawSW-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/sanjaymaverick-cmd/clawSW
+---
+
+# ClawSW Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: clawSW-workflow-add-new-database-table-and-api
+trigger: "when doing add new database table and api"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/sanjaymaverick-cmd/clawSW
+---
+
+# ClawSW Workflow Add New Database Table And Api
+
+## Action
+
+Follow the add-new-database-table-and-api workflow:
+1. Define new table(s) in models.py
+2. Generate Alembic migration for schema changes
+3. Update schemas.py with new Pydantic models
+4. Update or create relevant routers (e.g., public.py, website.py, tally.py) to expose new endpoints
+5. Update seed.py to seed initial data and permissions
+6. Update or add tests for new functionality (test_seed.py, test_<feature>.py)
+7. Update documentation (docs/BLUEPRINT.md) to reflect schema and permission changes
+8. Update frontend (Next.js or dashboard) to consume new API endpoints if applicable
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: api/app/models.py, api/app/schemas.py, api/app/routers/*.py
+
+---
+id: clawSW-workflow-update-permissions-and-seed-data
+trigger: "when doing update permissions and seed data"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/sanjaymaverick-cmd/clawSW
+---
+
+# ClawSW Workflow Update Permissions And Seed Data
+
+## Action
+
+Follow the update-permissions-and-seed-data workflow:
+1. Edit docs/BLUEPRINT.md to update the permissions matrix
+2. Update seed.py to seed new or changed permissions
+3. Update test_seed.py to test new permission logic
+4. Update comments in seed and test files to reference the correct documentation section
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: docs/BLUEPRINT.md, api/app/seed.py, api/tests/test_seed.py
+
+---
+id: clawsw-instinct-file-naming
+trigger: "When creating a new source file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct File Naming
+
+## Action
+
+Name the file using camelCase convention
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.files
+- Observed in website/app/ and dashboard/src/
+
+---
+id: clawsw-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Function Naming
+
+## Action
+
+Name the function using camelCase convention
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.functions
+- Seen in api/app/models.py, schemas.py
+
+---
+id: clawsw-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase convention
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.classes
+- Seen in api/app/models.py
+
+---
+id: clawsw-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.constants
+
+---
+id: clawsw-instinct-import-style
+trigger: "When importing modules in Python files"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Import Style
+
+## Action
+
+Use relative imports
+
+## Evidence
+
+- Pattern in codeStyle.importStyle
+- Seen in api/app/*.py
+
+---
+id: clawsw-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.6
+domain: code-style
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Export Style
+
+## Action
+
+Use mixed export styles as appropriate for the language (Python/TypeScript)
+
+## Evidence
+
+- Pattern in codeStyle.exportStyle
+
+---
+id: clawsw-instinct-test-file-pattern
+trigger: "When creating a new test file"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Test File Pattern
+
+## Action
+
+Name the file using the pattern *.test.ts
+
+## Evidence
+
+- Pattern in testing.filePattern
+- Seen in api/tests/
+
+---
+id: clawsw-instinct-test-type
+trigger: "When writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Test Type
+
+## Action
+
+Write unit tests for new or changed functionality
+
+## Evidence
+
+- Pattern in testing.testTypes
+- Seen in api/tests/test_*.py
+
+---
+id: clawsw-instinct-test-location
+trigger: "When adding tests for a new feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Test Location
+
+## Action
+
+Place tests in api/tests/ or alongside the feature (mixed location)
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+- Seen in api/tests/
+
+---
+id: clawsw-instinct-commit-format
+trigger: "When making a commit"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Commit Format
+
+## Action
+
+Write a concise, freeform commit message (average ~36 characters), without enforced prefixes
+
+## Evidence
+
+- Pattern in commits.type
+- Seen in commit examples: 'Build Phase 4: public website'
+
+---
+id: clawsw-instinct-add-new-table-workflow
+trigger: "When a new business entity or feature requiring persistent storage and API access is needed"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Add New Table Workflow
+
+## Action
+
+Follow the workflow: define table in models.py, generate Alembic migration, update schemas.py, update/create routers, update seed.py, add/update tests, update docs/BLUEPRINT.md, update frontend if needed
+
+## Evidence
+
+- Workflow: add-new-database-table-and-api
+- Pattern in commit sequences and files involved
+
+---
+id: clawsw-instinct-update-permissions-workflow
+trigger: "When changing or adding permission levels for roles or modules"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: sanjaymaverick-cmd/clawSW
+---
+
+# Clawsw Instinct Update Permissions Workflow
+
+## Action
+
+Edit docs/BLUEPRINT.md, update seed.py, update test_seed.py, and update comments to reference documentation
+
+## Evidence
+
+- Workflow: update-permissions-and-seed-data
+- Pattern in commit sequences and files involved
+
