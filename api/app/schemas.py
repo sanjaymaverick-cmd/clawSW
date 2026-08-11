@@ -89,11 +89,15 @@ class ItemOut(ItemBase):
 class WarehouseCreate(BaseModel):
     name: str = Field(min_length=1)
     location: str | None = None
+    kind: str = Field(default="main", pattern="^(main|van|branch)$")
+    assigned_user_id: uuid.UUID | None = None
 
 
 class WarehouseUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1)
     location: str | None = None
+    kind: str | None = Field(default=None, pattern="^(main|van|branch)$")
+    assigned_user_id: uuid.UUID | None = None
 
 
 class WarehouseOut(BaseModel):
@@ -102,6 +106,8 @@ class WarehouseOut(BaseModel):
     id: uuid.UUID
     name: str
     location: str | None
+    kind: str = "main"
+    assigned_user_id: uuid.UUID | None = None
 
 
 class StockLevelOut(BaseModel):
@@ -110,6 +116,7 @@ class StockLevelOut(BaseModel):
     item_name: str
     warehouse_id: uuid.UUID
     warehouse_name: str
+    warehouse_kind: str = "main"
     quantity: float
     reorder_level: int
     below_reorder: bool
@@ -247,6 +254,228 @@ class ReportSummary(BaseModel):
     service: ServiceReport | None = None
     financial: FinancialReport | None = None
     people: PeopleReport | None = None
+
+
+# ---- CEO / owner executive dashboard ----
+
+class CeoFinancialMetrics(BaseModel):
+    """Core financial picture from ops data (pre-full Tally P&L)."""
+
+    stock_capital: float
+    billed_jobs: int
+    billed_parts_value: float
+    website_gmv_all: float
+    website_gmv_30d: float
+    website_gmv_7d: float
+    pending_order_value: float
+    confirmed_not_synced_value: float
+    pipeline_value: float  # pending + confirmed (not yet synced)
+
+
+class CeoOperationalKpis(BaseModel):
+    open_service_jobs: int
+    in_progress_jobs: int
+    completed_jobs: int
+    billed_jobs: int
+    service_completion_rate_pct: float | None
+    avg_completion_hours: float | None
+    parts_used_value: float
+    low_stock_skus: int
+    stock_moves_7d: int
+    website_orders_pending: int
+    website_orders_30d: int
+    demo_bookings_pending: int
+    demo_bookings_30d: int
+    active_users: int
+    van_low_stock_skus: int = 0
+    stock_main_value: float = 0
+    stock_van_value: float = 0
+
+
+class CeoGrowthSeriesPoint(BaseModel):
+    day: str  # YYYY-MM-DD
+    website_orders: int
+    website_gmv: float
+    service_jobs_opened: int
+    stock_moves: int
+
+
+class CeoRiskItem(BaseModel):
+    id: str
+    severity: str  # critical | high | medium | low
+    category: str
+    title: str
+    detail: str
+    metric: float | None = None
+    action_hint: str | None = None
+
+
+class CeoPrediction(BaseModel):
+    id: str
+    horizon: str
+    title: str
+    estimate: str
+    confidence: str  # high | medium | low
+    basis: str
+
+
+class CeoInsight(BaseModel):
+    id: str
+    tone: str  # positive | warning | neutral | critical
+    title: str
+    body: str
+
+
+class CeoReceivablesSummary(BaseModel):
+    overdue_total: float
+    overdue_count: int
+    bucket_0_30: float
+    bucket_31_60: float
+    bucket_60_plus: float
+    upcoming_total: float
+
+
+class CeoImportsSummary(BaseModel):
+    total: int
+    delayed_or_hold: int
+    on_water: int
+    value_at_risk: float
+
+
+class CeoProjectsSummary(BaseModel):
+    active_count: int
+    pipeline_boq_value: float
+    lowest_margin_pct: float | None
+    lowest_margin_customer: str | None
+
+
+class CeoMaintenanceRisk(BaseModel):
+    machinery_id: str
+    name: str
+    risk_score: int
+    reason: str
+
+
+class CeoMaintenanceSummary(BaseModel):
+    elevated_count: int
+    top_risks: list[CeoMaintenanceRisk]
+
+
+class CeoServiceCity(BaseModel):
+    city: str
+    open_jobs: int
+    type: str = "city"  # city | hq | branch
+
+
+class CeoSnapshot(BaseModel):
+    """Owner/CEO executive view — aggregates only, no customer PII rows."""
+
+    generated_at: str
+    financial: CeoFinancialMetrics
+    operational: CeoOperationalKpis
+    series_14d: list[CeoGrowthSeriesPoint]
+    risks: list[CeoRiskItem]
+    predictions: list[CeoPrediction]
+    insights: list[CeoInsight]
+    health_score: int  # 0-100 composite
+    tally: dict  # gateway_reachable, pending_push, failed_push, last_push_at
+    receivables: CeoReceivablesSummary | None = None
+    imports: CeoImportsSummary | None = None
+    projects: CeoProjectsSummary | None = None
+    maintenance: CeoMaintenanceSummary | None = None
+    service_map: list[CeoServiceCity] = []
+
+
+# ---- Imports / projects ----
+
+class ImportContainerCreate(BaseModel):
+    code: str = Field(min_length=1)
+    origin: str | None = None
+    port: str | None = None
+    supplier: str | None = None
+    eta_port: date | None = None
+    status: str = "On Water"
+    milestone: str | None = None
+    value_inr: float = 0
+    delay_days: int = 0
+    machine_count: int = 0
+    notes: str | None = None
+
+
+class ImportContainerOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    code: str
+    origin: str | None
+    port: str | None
+    supplier: str | None
+    eta_port: date | None
+    status: str
+    milestone: str | None
+    value_inr: float
+    delay_days: int
+    machine_count: int
+    notes: str | None
+    created_at: datetime
+
+
+class ProjectCreate(BaseModel):
+    code: str = Field(min_length=1)
+    customer_name: str = Field(min_length=1)
+    city: str | None = None
+    stage: str = "Quote"
+    boq_value: float = 0
+    margin_pct: float = 0
+    target_install: date | None = None
+    status: str = "active"
+
+
+class ProjectOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    code: str
+    customer_name: str
+    city: str | None
+    stage: str
+    boq_value: float
+    margin_pct: float
+    target_install: date | None
+    status: str
+    created_at: datetime
+
+
+class ReceivableOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    party_ref: str | None
+    party_name: str
+    amount: float
+    due_date: date | None
+    days_overdue: int
+    status: str
+    source: str
+    entity_type: str | None
+    entity_id: uuid.UUID | None
+    captured_at: datetime
+
+
+class MachinePassportOut(BaseModel):
+    id: uuid.UUID
+    name: str
+    category: str | None
+    qr_code: str | None
+    brochure_path: str | None
+    installed_at: date | None
+    city: str | None
+    customer_name: str | None
+    service_job_count: int
+    open_job_count: int
+    parts_value: float
+    risk_score: int
+    risk_reason: str
 
 
 # ---- Phase 4: public website ----

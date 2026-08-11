@@ -76,6 +76,8 @@ export interface Warehouse {
   id: string;
   name: string;
   location: string | null;
+  kind?: string;
+  assigned_user_id?: string | null;
 }
 
 export interface StockLevel {
@@ -84,9 +86,63 @@ export interface StockLevel {
   item_name: string;
   warehouse_id: string;
   warehouse_name: string;
+  warehouse_kind?: string;
   quantity: number;
   reorder_level: number;
   below_reorder: boolean;
+}
+
+export interface ImportContainer {
+  id: string;
+  code: string;
+  origin: string | null;
+  port: string | null;
+  supplier: string | null;
+  eta_port: string | null;
+  status: string;
+  milestone: string | null;
+  value_inr: number;
+  delay_days: number;
+  machine_count: number;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface ProjectRow {
+  id: string;
+  code: string;
+  customer_name: string;
+  city: string | null;
+  stage: string;
+  boq_value: number;
+  margin_pct: number;
+  target_install: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface ReceivableRow {
+  id: string;
+  party_name: string;
+  amount: number;
+  due_date: string | null;
+  days_overdue: number;
+  status: string;
+  source: string;
+}
+
+export interface MachinePassport {
+  id: string;
+  name: string;
+  category: string | null;
+  qr_code: string | null;
+  risk_score: number;
+  risk_reason: string;
+  service_job_count: number;
+  open_job_count: number;
+  parts_value: number;
+  city: string | null;
+  customer_name: string | null;
 }
 
 export interface StockMove {
@@ -155,6 +211,108 @@ export interface ReportSummary {
     active_users: number;
     users_by_role: Record<string, number>;
   } | null;
+}
+
+export interface CeoSnapshot {
+  generated_at: string;
+  financial: {
+    stock_capital: number;
+    billed_jobs: number;
+    billed_parts_value: number;
+    website_gmv_all: number;
+    website_gmv_30d: number;
+    website_gmv_7d: number;
+    pending_order_value: number;
+    confirmed_not_synced_value: number;
+    pipeline_value: number;
+  };
+  operational: {
+    open_service_jobs: number;
+    in_progress_jobs: number;
+    completed_jobs: number;
+    billed_jobs: number;
+    service_completion_rate_pct: number | null;
+    avg_completion_hours: number | null;
+    parts_used_value: number;
+    low_stock_skus: number;
+    stock_moves_7d: number;
+    website_orders_pending: number;
+    website_orders_30d: number;
+    demo_bookings_pending: number;
+    demo_bookings_30d: number;
+    active_users: number;
+    van_low_stock_skus?: number;
+    stock_main_value?: number;
+    stock_van_value?: number;
+  };
+  receivables?: {
+    overdue_total: number;
+    overdue_count: number;
+    bucket_0_30: number;
+    bucket_31_60: number;
+    bucket_60_plus: number;
+    upcoming_total: number;
+  } | null;
+  imports?: {
+    total: number;
+    delayed_or_hold: number;
+    on_water: number;
+    value_at_risk: number;
+  } | null;
+  projects?: {
+    active_count: number;
+    pipeline_boq_value: number;
+    lowest_margin_pct: number | null;
+    lowest_margin_customer: string | null;
+  } | null;
+  maintenance?: {
+    elevated_count: number;
+    top_risks: { machinery_id: string; name: string; risk_score: number; reason: string }[];
+  } | null;
+  service_map?: { city: string; open_jobs: number; type: string }[];
+  series_14d: {
+    day: string;
+    website_orders: number;
+    website_gmv: number;
+    service_jobs_opened: number;
+    stock_moves: number;
+  }[];
+  risks: {
+    id: string;
+    severity: string;
+    category: string;
+    title: string;
+    detail: string;
+    metric: number | null;
+    action_hint: string | null;
+  }[];
+  predictions: {
+    id: string;
+    horizon: string;
+    title: string;
+    estimate: string;
+    confidence: string;
+    basis: string;
+  }[];
+  insights: {
+    id: string;
+    tone: string;
+    title: string;
+    body: string;
+  }[];
+  health_score: number;
+  tally: {
+    gateway_reachable: boolean;
+    pending_push_count: number;
+    failed_push_count: number;
+    last_push_at: string | null;
+  };
+}
+
+export interface AiQueryResponse {
+  answer: string;
+  resources_used: string[];
+  financial_included: boolean;
 }
 
 export interface WebsiteOrderItem {
@@ -230,8 +388,20 @@ export const api = {
   createItem: (token: string, body: Partial<Item>) =>
     request<Item>("/items", { method: "POST", body, token }),
   listWarehouses: (token: string) => request<Warehouse[]>("/warehouses", { token }),
-  createWarehouse: (token: string, body: { name: string; location?: string }) =>
-    request<Warehouse>("/warehouses", { method: "POST", body, token }),
+  createWarehouse: (
+    token: string,
+    body: { name: string; location?: string; kind?: string; assigned_user_id?: string },
+  ) => request<Warehouse>("/warehouses", { method: "POST", body, token }),
+  listImportContainers: (token: string) =>
+    request<ImportContainer[]>("/imports/containers", { token }),
+  createImportContainer: (token: string, body: Partial<ImportContainer>) =>
+    request<ImportContainer>("/imports/containers", { method: "POST", body, token }),
+  listProjects: (token: string) => request<ProjectRow[]>("/projects", { token }),
+  createProject: (token: string, body: Partial<ProjectRow>) =>
+    request<ProjectRow>("/projects", { method: "POST", body, token }),
+  listReceivables: (token: string) => request<ReceivableRow[]>("/receivables", { token }),
+  listMachinePassports: (token: string) =>
+    request<MachinePassport[]>("/machinery/passports", { token }),
   listStock: (token: string) => request<StockLevel[]>("/stock", { token }),
   adjustStock: (
     token: string,
@@ -284,6 +454,21 @@ export const api = {
 
   reportSummary: (token: string) =>
     request<ReportSummary>("/reports/summary", { token }),
+
+  reportCeo: (token: string) => request<CeoSnapshot>("/reports/ceo", { token }),
+
+  aiQuery: (
+    token: string,
+    body: { question: string; include_financial?: boolean },
+  ) =>
+    request<AiQueryResponse>("/ai-query", {
+      method: "POST",
+      body: {
+        question: body.question,
+        include_financial: body.include_financial ?? true,
+      },
+      token,
+    }),
 
   listWebsiteOrders: (token: string, status?: string) =>
     request<WebsiteOrder[]>(

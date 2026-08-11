@@ -29,9 +29,11 @@ from .config import settings
 from .models import (
     CompletedProject,
     DemoBooking,
+    ImportContainer,
     Item,
     JobPartUsed,
     Machinery,
+    Project,
     Role,
     ServiceJob,
     StockLevel,
@@ -81,47 +83,76 @@ DEMO_ITEMS: list[dict] = [
          description="Lever-action grease gun for service work."),
 ]
 
-# Two warehouses; keyed on name.
+# Warehouses; keyed on name. kind: main | van | branch
 DEMO_WAREHOUSES: list[dict] = [
-    dict(name="Demo Main Warehouse", location="Bengaluru"),
-    dict(name="Demo Secondary Warehouse", location="Hyderabad"),
+    dict(name="Demo Main Warehouse", location="Jodhpur", kind="main"),
+    dict(name="Demo Secondary Warehouse", location="Jaipur", kind="branch"),
+    dict(name="Demo Tech Van — Jodhpur", location="Mobile", kind="van"),
 ]
 
 # Per-warehouse quantity for each item, indexed by warehouse name.
 DEMO_STOCK: dict[str, float] = {
     "Demo Main Warehouse": 40.0,
     "Demo Secondary Warehouse": 15.0,
+    "Demo Tech Van — Jodhpur": 3.0,
 }
 
 # A few machinery rows with placeholder brochures + QR codes; keyed on qr_code.
 DEMO_MACHINERY: list[dict] = [
     dict(name="Demo CNC Lathe X200", category="CNC",
          brochure_path="/brochures/demo-cnc-lathe-x200.pdf",
-         qr_code="DEMO-QR-CNC-X200"),
+         qr_code="DEMO-QR-CNC-X200",
+         installed_at=date(2019, 4, 1), city="Jodhpur", customer_name="Ashok Textiles (demo)"),
     dict(name="Demo Hydraulic Press H50", category="Press",
          brochure_path="/brochures/demo-hydraulic-press-h50.pdf",
-         qr_code="DEMO-QR-PRESS-H50"),
+         qr_code="DEMO-QR-PRESS-H50",
+         installed_at=date(2022, 8, 15), city="Jaipur", customer_name="Vega Engineering (demo)"),
     dict(name="Demo Surface Grinder G10", category="Grinder",
          brochure_path="/brochures/demo-surface-grinder-g10.pdf",
-         qr_code="DEMO-QR-GRINDER-G10"),
+         qr_code="DEMO-QR-GRINDER-G10",
+         installed_at=date(2024, 1, 20), city="Jodhpur", customer_name="Nova Fabricators (demo)"),
+]
+
+DEMO_CONTAINERS: list[dict] = [
+    dict(code="SW-CN-1042", origin="Qingdao, China", port="Mundra", supplier="Rongde",
+         eta_port=date(2026, 8, 20), status="On Water", milestone="Customs filing pending",
+         value_inr=3_120_000, delay_days=0, machine_count=6),
+    dict(code="SW-CN-1039", origin="Ningbo, China", port="Nhava Sheva", supplier="Hanwood",
+         eta_port=date(2026, 7, 18), status="Customs Hold", milestone="Duty assessment dispute",
+         value_inr=4_260_000, delay_days=6, machine_count=9),
+    dict(code="SW-CN-1035", origin="Taichung, Taiwan", port="Mundra", supplier="Chien Wei",
+         eta_port=date(2026, 7, 2), status="Delivered", milestone="In warehouse",
+         value_inr=1_650_000, delay_days=0, machine_count=3),
+]
+
+DEMO_TURNKEY: list[dict] = [
+    dict(code="PRJ-2201", customer_name="Rathi Furniture Works", city="Jodhpur",
+         stage="Container Tracking", boq_value=6_200_000, margin_pct=18.4,
+         target_install=date(2026, 8, 15), status="active"),
+    dict(code="PRJ-2193", customer_name="Desert Craft Exports", city="Jodhpur",
+         stage="Delivery & Install", boq_value=9_100_000, margin_pct=15.7,
+         target_install=date(2026, 7, 28), status="active"),
+    dict(code="PRJ-2187", customer_name="Pink City Woodcrafts", city="Jaipur",
+         stage="Quote", boq_value=2_100_000, margin_pct=24.0,
+         target_install=date(2026, 9, 5), status="active"),
 ]
 
 # One service job per status. machine_qr picks the machinery row (or None);
 # parts is a list of (sku, quantity) for job_parts_used. Keyed on customer_name.
 DEMO_SERVICE_JOBS: list[dict] = [
-    dict(customer_name="Ashok Textiles (demo)", status="open",
+    dict(customer_name="Ashok Textiles (demo)", status="open", city="Jodhpur",
          machine_qr="DEMO-QR-CNC-X200",
          description="Spindle noise on startup — diagnose.",
          completed_at=None, parts=[("DEMO-SP-003", 1)]),
-    dict(customer_name="Vega Engineering (demo)", status="in_progress",
+    dict(customer_name="Vega Engineering (demo)", status="in_progress", city="Jaipur",
          machine_qr="DEMO-QR-PRESS-H50",
          description="Hydraulic leak, reseal main cylinder.",
          completed_at=None, parts=[("DEMO-SP-001", 2)]),
-    dict(customer_name="Nova Fabricators (demo)", status="completed",
+    dict(customer_name="Nova Fabricators (demo)", status="completed", city="Jodhpur",
          machine_qr="DEMO-QR-GRINDER-G10",
          description="Replaced worn drive belt and lubricated.",
          completed_at=_dt(2026, 6, 18), parts=[("DEMO-SP-002", 1), ("DEMO-TL-003", 1)]),
-    dict(customer_name="Sunrise Metals (demo)", status="billed",
+    dict(customer_name="Sunrise Metals (demo)", status="billed", city="Jodhpur",
          machine_qr="DEMO-QR-CNC-X200",
          description="Annual service — bearings replaced, invoiced.",
          completed_at=_dt(2026, 5, 30), parts=[("DEMO-SP-003", 2)]),
@@ -181,6 +212,8 @@ def seed_demo(db: Session) -> None:
     _seed_projects(db)
     _seed_orders(db, items)
     _seed_bookings(db, machinery)
+    _seed_import_containers(db)
+    _seed_turnkey_projects(db)
 
     db.commit()
     logger.info("Seeded demo dataset (SEED_DEMO_DATA set)")
@@ -272,6 +305,7 @@ def _seed_service_jobs(
             assigned_technician_id=technician.id,
             status=data["status"],
             description=data["description"],
+            city=data.get("city"),
             completed_at=data["completed_at"],
         )
         db.add(job)
@@ -289,16 +323,37 @@ def _seed_projects(db: Session) -> None:
     db.flush()
 
 
+def _seed_import_containers(db: Session) -> None:
+    existing = {c.code for c in db.execute(select(ImportContainer)).scalars()}
+    for data in DEMO_CONTAINERS:
+        if data["code"] not in existing:
+            db.add(ImportContainer(**data))
+    db.flush()
+
+
+def _seed_turnkey_projects(db: Session) -> None:
+    existing = {p.code for p in db.execute(select(Project)).scalars()}
+    for data in DEMO_TURNKEY:
+        if data["code"] not in existing:
+            db.add(Project(**data))
+    db.flush()
+
+
 def _seed_orders(db: Session, items: dict[str, Item]) -> None:
     existing = {o.email: o for o in db.execute(select(WebsiteOrder)).scalars()}
     for data in DEMO_ORDERS:
         if data["email"] in existing:
+            # Keep demo AR interesting: age non-pending demo orders
+            if data["status"] != "pending":
+                existing[data["email"]].created_at = _dt(2026, 5, 1)
             continue
         order = WebsiteOrder(
             customer_name=data["customer_name"],
             email=data["email"],
             phone=data["phone"],
             status=data["status"],
+            # Age confirmed/synced orders so inferred receivables appear for CEO demos
+            created_at=_dt(2026, 5, 1) if data["status"] != "pending" else _dt(2026, 7, 20),
         )
         db.add(order)
         db.flush()

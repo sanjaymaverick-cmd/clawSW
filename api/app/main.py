@@ -17,8 +17,12 @@ from .routers import (
     ai_query,
     audit,
     auth,
+    imports,
     inventory,
+    machinery_passport,
+    projects,
     public,
+    receivables,
     reports,
     service,
     tally,
@@ -102,6 +106,10 @@ app.include_router(website.router)
 app.include_router(tally.router)
 app.include_router(audit.router)
 app.include_router(ai_query.router)
+app.include_router(imports.router)
+app.include_router(projects.router)
+app.include_router(receivables.router)
+app.include_router(machinery_passport.router)
 
 
 @app.get("/health")

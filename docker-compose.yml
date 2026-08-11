@@ -96,38 +96,53 @@ services:
     restart: unless-stopped
     depends_on:
       - api
-    ports:
-      - "8080:80"
+    # Not published on the host — use the gateway at :8080/app/
+    # (optional direct debug: docker compose port dashboard 80)
 
   website:
     build:
       context: ./website
       args:
-        # URL browsers use to reach the API (baked into the client bundle).
-        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
+        # Baked into the client bundle. Defaults target the gateway so the
+        # browser stays same-origin (login token shared with /app).
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-/api}
+        NEXT_PUBLIC_DASHBOARD_URL: ${PUBLIC_DASHBOARD_URL:-/app/}
+        # Show demo account list on /login when testing (off in production).
+        NEXT_PUBLIC_SHOW_DEMO_LOGINS: ${SHOW_DEMO_LOGINS:-true}
     restart: unless-stopped
     environment:
       # Server-side rendering talks to the API over the compose network.
       API_URL: http://api:8000
     depends_on:
       - api
+    # Optional direct access for Next-only work; full staff flow uses gateway.
     ports:
       - "3000:3000"
 
-  # Reverse proxy + automatic HTTPS (Phase 10) in front of website/dashboard/
-  # api. Only needed for a remote, internet-reachable rehearsal deploy — on a
-  # purely local box you reach the services on their published ports directly
-  # (this service stays out of `docker compose up` via the `remote` profile
-  # below). Caddy fetches/renews Let's Encrypt certs for the domains in .env,
-  # terminates TLS, and proxies to the app containers over the compose network
-  # (see ./Caddyfile).
+  # Single local front door: website + staff login + dashboard + API.
+  #   http://localhost:8080/          public Sanjay Wood Tech site
+  #   http://localhost:8080/login     staff sign-in
+  #   http://localhost:8080/app/      staff dashboard
+  #   http://localhost:8080/api/…     FastAPI
+  gateway:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - website
+      - dashboard
+      - api
+
+  # Reverse proxy + automatic HTTPS (Phase 10) for remote internet deploys.
+  # Opt-in via profile so local `docker compose up` never starts it:
+  #   docker compose --profile remote up --build
+  # Needs WEBSITE_DOMAIN / DASHBOARD_DOMAIN / API_DOMAIN / CADDY_ACME_EMAIL in .env.
   caddy:
     image: caddy:2
     restart: unless-stopped
-    # Opt-in: only starts under the `remote` profile, so the local quick-start
-    # (`docker compose up`) never launches it. Bring it up on a remote host
-    # with `docker compose --profile remote up --build` once the WEBSITE_DOMAIN
-    # / DASHBOARD_DOMAIN / API_DOMAIN / CADDY_ACME_EMAIL vars are set in .env.
     profiles: ["remote"]
     ports:
       - "80:80"
@@ -135,12 +150,9 @@ services:
       - "443:443/udp"  # HTTP/3
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      # Persist issued certificates + the ACME account across restarts so Caddy
-      # doesn't re-request certs on every boot (Let's Encrypt rate-limits).
       - ./caddy/data:/data
       - ./caddy/config:/config
     environment:
-      # Consumed by ./Caddyfile via {$VAR}. Leave unset on a local-only box.
       CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL:-}
       WEBSITE_DOMAIN: ${WEBSITE_DOMAIN:-}
       DASHBOARD_DOMAIN: ${DASHBOARD_DOMAIN:-}

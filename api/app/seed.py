@@ -50,6 +50,8 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
         ("website", "read"), ("website", "write"),
         ("admin", "read"), ("admin", "write"),
         ("ai_query", "read"),
+        ("imports", "read"), ("imports", "write"),
+        ("projects", "read"), ("projects", "write"),
     ],
     "manager": [
         ("inventory", "read"), ("inventory", "write"),
@@ -58,17 +60,22 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
         ("reports", "read"),
         ("website", "read"), ("website", "write"),
         ("ai_query", "read"),
+        ("imports", "read"), ("imports", "write"),
+        ("projects", "read"), ("projects", "write"),
     ],
     "accountant": [
         ("inventory", "read"),
         ("invoices", "read"), ("invoices", "write"),
         ("reports", "read"),
         ("website", "read"),
+        ("imports", "read"),
+        ("projects", "read"),
     ],
     "service_manager": [
         ("inventory", "read"),
         ("service_jobs", "read"), ("service_jobs", "write"),
         ("reports", "read"),
+        ("projects", "read"),
     ],
     "technician": [
         ("inventory", "read"),
@@ -78,6 +85,8 @@ PERMISSION_MATRIX: dict[str, list[tuple[str, str]]] = {
         ("inventory", "read"), ("inventory", "write"),
         ("reports", "read"),
         ("website", "read"),
+        ("imports", "read"), ("imports", "write"),
+        ("projects", "read"),
     ],
 }
 

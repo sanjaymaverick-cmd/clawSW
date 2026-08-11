@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { api, ApiError } from "./api";
+import { Button } from "./ui";
+
+/** Public site staff login — preferred entry when fronted by the gateway. */
+const SITE_LOGIN =
+  (import.meta.env.VITE_STAFF_LOGIN_URL as string | undefined) || "/login";
 
 export default function Login({ onToken }: { onToken: (token: string) => void }) {
   const [email, setEmail] = useState("");
@@ -22,43 +27,86 @@ export default function Login({ onToken }: { onToken: (token: string) => void })
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{
+        background:
+          "radial-gradient(50% 40% at 50% 0%, rgba(224,164,90,0.12), transparent 60%), var(--bg)",
+      }}
+    >
       <form
         onSubmit={submit}
-        className="bg-white rounded-xl shadow p-8 w-full max-w-sm space-y-4"
+        className="staff-card w-full max-w-sm space-y-4"
+        style={{
+          background:
+            "radial-gradient(90% 70% at 10% 0%, rgba(224,164,90,0.1), transparent 55%), linear-gradient(180deg, var(--surface-2), var(--surface))",
+        }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">clawSW</h1>
-          <p className="text-sm text-slate-500">Internal dashboard sign-in</p>
+          <p
+            style={{
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--wood)",
+              margin: 0,
+            }}
+          >
+            Sanjay Wood Tech
+          </p>
+          <h1
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: 700,
+              margin: "6px 0 0",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Staff sign-in
+          </h1>
+          <p style={{ fontSize: "0.875rem", color: "var(--muted)", margin: "8px 0 0" }}>
+            Internal operations — inventory, service, orders, invoicing.
+          </p>
         </div>
-        <label className="block">
-          <span className="text-sm font-medium text-slate-700">Email</span>
+        <label style={{ display: "block" }}>
+          <span style={{ fontSize: "0.875rem", fontWeight: 500, color: "var(--muted)" }}>
+            Email
+          </span>
           <input
             type="email"
             required
+            autoComplete="username"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="staff-input"
+            style={{ marginTop: 6, width: "100%" }}
           />
         </label>
-        <label className="block">
-          <span className="text-sm font-medium text-slate-700">Password</span>
+        <label style={{ display: "block" }}>
+          <span style={{ fontSize: "0.875rem", fontWeight: 500, color: "var(--muted)" }}>
+            Password
+          </span>
           <input
             type="password"
             required
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="staff-input"
+            style={{ marginTop: 6, width: "100%" }}
           />
         </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-md bg-blue-600 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-        >
+        {error && <p className="staff-alert staff-alert-error">{error}</p>}
+        <Button type="submit" variant="primary" disabled={busy} style={{ width: "100%" }}>
           {busy ? "Signing in…" : "Sign in"}
-        </button>
+        </Button>
+        <p style={{ textAlign: "center", fontSize: "0.75rem", color: "var(--dim)", margin: 0 }}>
+          Prefer the public site entry?{" "}
+          <a href={SITE_LOGIN} style={{ fontWeight: 600, color: "var(--wood)" }}>
+            /login
+          </a>
+        </p>
       </form>
     </div>
   );

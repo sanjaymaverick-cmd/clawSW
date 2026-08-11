@@ -2,9 +2,11 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
-// In dev, /api/* is proxied to the local FastAPI server; in the Docker
-// image the same prefix is proxied by nginx (see nginx.conf).
+// base /app/ so the SPA shares an origin with the public website when
+// fronted by the gateway (sanjaywoodtech.com/app/…). In dev open
+// http://localhost:5173/app/ — /api/* is proxied to FastAPI.
 export default defineConfig({
+  base: "/app/",
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,

@@ -107,6 +107,9 @@ class Warehouse(Base):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(Text, nullable=False)
     location: Mapped[str | None] = mapped_column(Text)
+    # 'main' | 'van' | 'branch' — van may link to a technician user
+    kind: Mapped[str] = mapped_column(Text, nullable=False, default="main")
+    assigned_user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
 
 
 class StockLevel(Base):
@@ -156,6 +159,9 @@ class Machinery(Base):
     brochure_path: Mapped[str | None] = mapped_column(Text)
     category: Mapped[str | None] = mapped_column(Text)
     qr_code: Mapped[str | None] = mapped_column(Text, unique=True)
+    installed_at: Mapped[date | None] = mapped_column(Date)
+    city: Mapped[str | None] = mapped_column(Text)
+    customer_name: Mapped[str | None] = mapped_column(Text)
 
 
 class ServiceJob(Base):
@@ -171,6 +177,7 @@ class ServiceJob(Base):
         Text, nullable=False, default="open"
     )  # 'open','in_progress','completed','billed'
     description: Mapped[str | None] = mapped_column(Text)
+    city: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_utcnow
     )
@@ -314,3 +321,75 @@ class DemoBooking(Base):
     )  # 'pending','confirmed','cancelled'
 
     machinery: Mapped[Machinery] = relationship()
+
+
+class ReceivableSnapshot(Base):
+    """AR aging rows — inferred from website orders and/or Tally pulls."""
+
+    __tablename__ = "receivable_snapshots"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    party_ref: Mapped[str | None] = mapped_column(Text)
+    party_name: Mapped[str] = mapped_column(Text, nullable=False)
+    amount: Mapped[float] = mapped_column(NUMERIC, nullable=False, default=0)
+    due_date: Mapped[date | None] = mapped_column(Date)
+    days_overdue: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    status: Mapped[str] = mapped_column(Text, nullable=False)  # overdue|upcoming|paid
+    source: Mapped[str] = mapped_column(Text, nullable=False)  # inferred_order|tally|manual
+    entity_type: Mapped[str | None] = mapped_column(Text)
+    entity_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    captured_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
+
+
+class ImportContainer(Base):
+    __tablename__ = "import_containers"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    code: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    origin: Mapped[str | None] = mapped_column(Text)
+    port: Mapped[str | None] = mapped_column(Text)
+    supplier: Mapped[str | None] = mapped_column(Text)
+    eta_port: Mapped[date | None] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="On Water")
+    milestone: Mapped[str | None] = mapped_column(Text)
+    value_inr: Mapped[float] = mapped_column(NUMERIC, nullable=False, default=0)
+    delay_days: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    machine_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    notes: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
+
+
+class Project(Base):
+    """Operational turnkey project (not marketing completed_projects)."""
+
+    __tablename__ = "projects"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    code: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    customer_name: Mapped[str] = mapped_column(Text, nullable=False)
+    city: Mapped[str | None] = mapped_column(Text)
+    stage: Mapped[str] = mapped_column(Text, nullable=False, default="Quote")
+    boq_value: Mapped[float] = mapped_column(NUMERIC, nullable=False, default=0)
+    margin_pct: Mapped[float] = mapped_column(NUMERIC, nullable=False, default=0)
+    target_install: Mapped[date | None] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="active")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
+
+
+class ProjectContainer(Base):
+    __tablename__ = "project_containers"
+    __table_args__ = (UniqueConstraint("project_id", "container_id"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    project_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("projects.id"), nullable=False
+    )
+    container_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("import_containers.id"), nullable=False
+    )

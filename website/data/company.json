@@ -1,0 +1,192 @@
+{
+  "name": "Sanjay Wood Tech",
+  "tagline": "Precision-engineered woodworking machinery that helps your business produce more with greater efficiency.",
+  "founded": "2001",
+  "hq": "Jodhpur, Rajasthan, India",
+  "address": "G-588, Epip, Boranada-salawas Road, Boranada Industrial Area, Jodhpur (Raj.) 342012 India",
+  "phones": [
+    "+91 63775 19088",
+    "+91 93140 22777",
+    "+91 98292 12261",
+    "+91 91665 88844",
+    "+91 80942 77779"
+  ],
+  "emails": [
+    "enquiry@sanjaywoodtech.com",
+    "service@sanjaywoodtech.com"
+  ],
+  "social": {
+    "instagram": "https://www.instagram.com/sanjaywoodtech",
+    "facebook": "https://www.facebook.com/share/1aRagNs3Rm/"
+  },
+  "stats": [
+    {
+      "value": "28+",
+      "label": "Years of experience"
+    },
+    {
+      "value": "2000+",
+      "label": "Factories equipped"
+    },
+    {
+      "value": "4",
+      "label": "Cities with technical teams"
+    },
+    {
+      "value": "Pan-India",
+      "label": "Service coverage"
+    }
+  ],
+  "mission": "To give every Indian factory direct access to world-class industrial machinery — without middlemen, with expert installation and lifetime after-sales support.",
+  "story": "Founded in Jodhpur in 2001, Sanjay Woodtech started with a single goal — to bridge the gap between global machinery manufacturers and Indian production units. Today we operate across four cities with a dedicated technical team serving factories pan India.",
+  "team": [
+    {
+      "name": "Sanjay Bagriya",
+      "role": "Founder & Director",
+      "bio": "B.Tech. in Mechanical Engineering with 28+ years of expertise in woodworking, panel, metal and stone working machinery. Directly trading with manufacturers in China, Taiwan and Europe."
+    },
+    {
+      "name": "Rajendra Jangir",
+      "role": "Technical Head",
+      "bio": "B.Sc. with diplomas in Carpentry, Finishing and CNC Working. 30+ years of experience across leading woodworking firms in India and internationally. Expert in machinery technicals, project planning and CAD-CAM software."
+    }
+  ],
+  "services": [
+    {
+      "title": "Factory Technical Consulting",
+      "description": "Technical guidance for factory layout planning, machine selection, process optimization and workflow improvement."
+    },
+    {
+      "title": "Machine Placement & Installation",
+      "description": "Complete machine placement, installation and commissioning at your factory floor by our expert technical team."
+    },
+    {
+      "title": "Engineering & Technical Services",
+      "description": "Machine layout drawings, BOQ preparation, structural coordination and complete technical documentation."
+    },
+    {
+      "title": "3D Modelling & Execution",
+      "description": "Detailed 3D factory modelling and production drawings to help you visualize and implement projects accurately."
+    },
+    {
+      "title": "Floor Compliance & Training",
+      "description": "Floor compliance assessment and hands-on operator training for every machine installed at your factory."
+    },
+    {
+      "title": "Pilot Run & Final Handover",
+      "description": "Complete pilot run support and formal project handover after successful installation and operator training."
+    },
+    {
+      "title": "Architecture & Design",
+      "description": "Technical Support for Factory Design & Planning"
+    },
+    {
+      "title": "Architectural Planning",
+      "description": "Initial concept to detailed factory layout — planned for maximum production efficiency."
+    },
+    {
+      "title": "Building Compliance",
+      "description": "Factory designs meeting industrial building standards and safety norms."
+    },
+    {
+      "title": "Project Coordination",
+      "description": "Every stage coordinated — from design approvals to final installation and handover."
+    },
+    {
+      "title": "Efficient Design Solutions",
+      "description": "Scalable factory layouts built for realproduction requirements."
+    },
+    {
+      "title": "Consulting Services",
+      "description": "End-to-end consulting support for every stage of your factory setup"
+    },
+    {
+      "title": "Floor Compliance & Trainings",
+      "description": "Floor compliance assessment, safety checks and hands-on operator training for every machine installed."
+    },
+    {
+      "title": "DIRACERP Implementation",
+      "description": "Complete implementation and integration of DIRACERP factory management software for your production unit."
+    },
+    {
+      "title": "What is DIRACERP?",
+      "description": "DIRACERP is a complete factory management ERP system that Sanjay Wood Tech implements for production units — covering everything from order management and floor operations to billing, HR and quality assessment."
+    },
+    {
+      "title": "Order & Production Management",
+      "description": "Sample Development · Buyer Order Management · PPIC/T&A · BOM & Routings · Fair Management"
+    },
+    {
+      "title": "Factory & Floor Operations",
+      "description": "Floor Management · Machine Maintenance · Warehouse Management · Purchase Management · Shipping & Documentation"
+    },
+    {
+      "title": "Business Management",
+      "description": "Customer Relations Manager · Automated Billing · Budgeting · HR & Payroll · Quality & Assessment"
+    },
+    {
+      "title": "Reporting & Compliance",
+      "description": "Quality & Assessment · Production Reports · Compliance Tracking · Audit Management"
+    }
+  ],
+  "why_us": [
+    {
+      "title": "Expert Installation",
+      "description": "Our technical team installs and commissions every machine."
+    },
+    {
+      "title": "Operator Training",
+      "description": "Hands-on training included with every machine we supply."
+    },
+    {
+      "title": "Pan India Service",
+      "description": "Spare parts and service support available across India."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "Do you install and commission machines at our factory?",
+      "answer": "Yes. Our experienced technicians visit your factory to handle machine installation, calibration, and commissioning, ensuring the equipment is ready for production."
+    },
+    {
+      "question": "Are machines available from stock?",
+      "answer": "Commonly used machine models are generally available in stock and can be dispatched promptly. For customized machines or special configurations, the typical delivery timeline is 4–8 weeks, depending on the specifications and production requirements. Our team will confirm the estimated delivery schedule during the quotation process."
+    },
+    {
+      "question": "Is operator training included?",
+      "answer": "Absolutely. We provide comprehensive operator training during installation, covering machine operation, maintenance procedures, safety guidelines, and best practices for maximum productivity."
+    },
+    {
+      "question": "Can you help with factory layout planning?",
+      "answer": "Yes. We assist with factory layout and production flow planning to help optimize space utilization, improve workflow efficiency, and maximize machine performance."
+    },
+    {
+      "question": "Which industries do you serve?",
+      "answer": "We serve a wide range of industries, including furniture manufacturing, modular furniture production, interior fit-outs, woodworking workshops, panel processing facilities, cabinetry, and custom wood product manufacturers."
+    },
+    {
+      "question": "Can we see a machine demonstration?",
+      "answer": "Yes. We can arrange live demonstrations, either at our showroom, customer sites, or through video demonstrations, so you can evaluate the machine’s performance before making a decision."
+    },
+    {
+      "question": "What payment terms do you offer?",
+      "answer": "We offer flexible payment terms based on the order value and machine type. Our sales team will discuss suitable payment options during the quotation process."
+    },
+    {
+      "question": "How do you recommend the right machine?",
+      "answer": "Our technical experts assess your production requirements, factory space, output goals, and budget to recommend the most suitable machinery solution."
+    },
+    {
+      "question": "Can we get a custom quotation for a full line?",
+      "answer": "Absolutely. We can provide customized quotations for individual machines or complete factory setups based on your production requirements."
+    }
+  ],
+  "testimonials": [
+    "We compared four suppliers before choosing Sanjay Wood Tech. Their pricing was 35% lower than domestic dealers, and their team installed everything within a week. The training was thorough — our operators were confident from day one.",
+    "The machinery delivered by Sanjay Wood Tech has transformed our manufacturing process. Accuracy, speed, and reliability have all improved. Their installation team completed the setup ahead of schedule, minimizing downtime for our business.",
+    "What stood out most was the combination of affordable pricing and premium quality. We achieved substantial cost savings without compromising on performance. The technical support team has remained responsive even after installation.",
+    "Choosing Sanjay Wood Tech was one of our best business decisions. Their machines are robust, easy to operate, and backed by excellent customer support. The return on investment has been faster than we anticipated.",
+    "We compared several vendors before making our decision. Sanjay Wood Tech not only offered the most competitive pricing but also demonstrated a strong commitment to customer success through timely installation and ongoing technical assistance.",
+    "Absolutely. We can provide customized quotations for individual machines or complete factory setups based on your production requirements."
+  ]
+}

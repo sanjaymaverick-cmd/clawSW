@@ -9,9 +9,9 @@ import {
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-white rounded-xl shadow p-4">
-      <p className="text-xs uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-slate-800">{value}</p>
+    <div className="staff-card p-4">
+      <p className="text-xs uppercase tracking-wide text-[var(--dim)]">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-[var(--text)]">{value}</p>
     </div>
   );
 }
@@ -90,20 +90,20 @@ export default function TallyPage({
 
   if (error && !status) {
     return (
-      <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
+      <p className="staff-alert staff-alert-error">{error}</p>
     );
   }
   if (!status) {
-    return <p className="text-sm text-slate-400">Loading…</p>;
+    return <p className="text-sm text-[var(--dim)]">Loading…</p>;
   }
 
   return (
     <div className="space-y-6">
       {error && (
-        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
+        <p className="staff-alert staff-alert-error">{error}</p>
       )}
       {notice && (
-        <p className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">
+        <p className="staff-alert staff-alert-ok">
           {notice}
         </p>
       )}
@@ -118,9 +118,9 @@ export default function TallyPage({
         <Stat label="Failed pushes" value={status.failed_push_count} />
       </div>
 
-      <section className="bg-white rounded-xl shadow p-6 space-y-3">
+      <section className="staff-card p-6 space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="staff-card-title">
             Confirmed orders awaiting Tally sync
           </h2>
           {canWrite && (
@@ -133,16 +133,16 @@ export default function TallyPage({
             </button>
           )}
         </div>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[var(--dim)]">
           The bridge worker pushes these automatically; pushing here syncs an
           invoice immediately.
         </p>
         {pending.length === 0 ? (
-          <p className="text-sm text-slate-400">Nothing waiting to sync.</p>
+          <p className="text-sm text-[var(--dim)]">Nothing waiting to sync.</p>
         ) : (
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+              <tr className="text-left text-xs uppercase tracking-wide text-[var(--dim)]">
                 <th className="py-2 pr-4">Customer</th>
                 <th className="py-2 pr-4">Items</th>
                 <th className="py-2 pr-4">Total</th>
@@ -153,14 +153,14 @@ export default function TallyPage({
             <tbody className="divide-y divide-slate-100">
               {pending.map((o) => (
                 <tr key={o.id}>
-                  <td className="py-2 pr-4 text-slate-800">{o.customer_name}</td>
-                  <td className="py-2 pr-4 text-slate-600">
+                  <td className="py-2 pr-4 text-[var(--text)]">{o.customer_name}</td>
+                  <td className="py-2 pr-4 text-[var(--muted)]">
                     {o.items.map((i) => `${i.quantity}× ${i.sku}`).join(", ")}
                   </td>
-                  <td className="py-2 pr-4 text-slate-800">
+                  <td className="py-2 pr-4 text-[var(--text)]">
                     ₹{o.total.toLocaleString()}
                   </td>
-                  <td className="py-2 pr-4 text-slate-600">
+                  <td className="py-2 pr-4 text-[var(--muted)]">
                     {new Date(o.created_at).toLocaleDateString()}
                   </td>
                   {canWrite && (
@@ -181,14 +181,14 @@ export default function TallyPage({
         )}
       </section>
 
-      <section className="bg-white rounded-xl shadow p-6 space-y-3">
-        <h2 className="text-lg font-semibold text-slate-800">Sync log</h2>
+      <section className="staff-card p-6 space-y-3">
+        <h2 className="staff-card-title">Sync log</h2>
         {log.length === 0 ? (
-          <p className="text-sm text-slate-400">No sync activity yet.</p>
+          <p className="text-sm text-[var(--dim)]">No sync activity yet.</p>
         ) : (
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+              <tr className="text-left text-xs uppercase tracking-wide text-[var(--dim)]">
                 <th className="py-2 pr-4">When</th>
                 <th className="py-2 pr-4">Direction</th>
                 <th className="py-2 pr-4">Entity</th>
@@ -199,15 +199,15 @@ export default function TallyPage({
             <tbody className="divide-y divide-slate-100">
               {log.map((e) => (
                 <tr key={e.id}>
-                  <td className="py-2 pr-4 text-slate-600 whitespace-nowrap">
+                  <td className="py-2 pr-4 text-[var(--muted)] whitespace-nowrap">
                     {new Date(e.synced_at).toLocaleString()}
                   </td>
-                  <td className="py-2 pr-4 text-slate-600">
+                  <td className="py-2 pr-4 text-[var(--muted)]">
                     {e.direction === "to_tally" ? "→ Tally" : "← Tally"}
                   </td>
-                  <td className="py-2 pr-4 text-slate-600">
+                  <td className="py-2 pr-4 text-[var(--muted)]">
                     {e.entity_type}{" "}
-                    <span className="text-slate-400">
+                    <span className="text-[var(--dim)]">
                       {e.entity_id.slice(0, 8)}
                     </span>
                   </td>
@@ -218,7 +218,7 @@ export default function TallyPage({
                       {e.status.replace("_", " ")}
                     </span>
                   </td>
-                  <td className="py-2 text-slate-600">{e.error_message ?? ""}</td>
+                  <td className="py-2 text-[var(--muted)]">{e.error_message ?? ""}</td>
                 </tr>
               ))}
             </tbody>
