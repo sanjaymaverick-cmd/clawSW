@@ -41,6 +41,9 @@ Thumbs.db
 .claude/
 website/screenshots/
 
+# Local credentials convenience copy (canonical is docs/TEST_LOGINS.md)
+TEST_LOGINS.local.txt
+
 # Separate projects / scrape dumps (not part of clawSW)
 scraper/output/
 scraper/output_full/

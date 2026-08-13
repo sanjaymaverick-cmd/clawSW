@@ -7,7 +7,9 @@ COPY . .
 # Defaults assume the compose gateway (same-origin /api and /app/).
 ARG NEXT_PUBLIC_API_URL=/api
 ARG NEXT_PUBLIC_DASHBOARD_URL=/app/
-ARG NEXT_PUBLIC_SHOW_DEMO_LOGINS=true
+# Off by default — a production build must never expose the demo account list.
+# Opt in explicitly (e.g. a rehearsal box) via the compose arg / SHOW_DEMO_LOGINS.
+ARG NEXT_PUBLIC_SHOW_DEMO_LOGINS=false
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_DASHBOARD_URL=$NEXT_PUBLIC_DASHBOARD_URL
 ENV NEXT_PUBLIC_SHOW_DEMO_LOGINS=$NEXT_PUBLIC_SHOW_DEMO_LOGINS
