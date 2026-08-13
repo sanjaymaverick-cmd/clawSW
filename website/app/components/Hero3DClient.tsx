@@ -1,6 +1,11 @@
 "use client";
 
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import {
+  Component,
+  type ErrorInfo,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import dynamic from "next/dynamic";
 
 const fallbackStyle = {
@@ -38,10 +43,15 @@ class HeroErrorBoundary extends Component<
   }
 }
 
-export default function Hero3DClient() {
+type Props = {
+  /** Hero <section> ref for scroll-linked camera dolly. */
+  sectionRef?: RefObject<HTMLElement | null>;
+};
+
+export default function Hero3DClient({ sectionRef }: Props) {
   return (
     <HeroErrorBoundary>
-      <Hero3D />
+      <Hero3D sectionRef={sectionRef} />
     </HeroErrorBoundary>
   );
 }

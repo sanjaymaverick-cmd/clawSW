@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Reveal from "./components/Reveal";
 import Counter from "./components/Counter";
-import Hero3DClient from "./components/Hero3DClient";
+import HomeHero from "./components/HomeHero";
 import {
   IconMachine,
   IconTool,
@@ -59,19 +59,7 @@ export default function Home() {
   return (
     <>
       {/* ================= HERO ================= */}
-      <section
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          minHeight: "min(92vh, 900px)",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <div className="hero-canvas">
-          <Hero3DClient />
-        </div>
-
+      <HomeHero>
         <div
           className="container"
           style={{ position: "relative", zIndex: 2, paddingBlock: "80px" }}
@@ -151,7 +139,7 @@ export default function Home() {
             zIndex: 1,
           }}
         />
-      </section>
+      </HomeHero>
 
       {/* ================= MARQUEE ================= */}
       <div

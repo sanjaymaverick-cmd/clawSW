@@ -15,42 +15,44 @@ export type TexturePack = {
   dispose: () => void;
 };
 
-/** CC0 ambientCG 2K maps (desktop). */
+/**
+ * Desktop photoreal pack — 1024 WebP (~3.4 MB total with 1K HDRI + GLB).
+ * Re-export from source JPGs: `node scripts/optimize-hero3d.mjs`
+ */
 export const PBR_2K = {
   wood: {
     walnut: {
-      albedo: "/hero3d/textures/wood-walnut/albedo.jpg",
-      normal: "/hero3d/textures/wood-walnut/normal.jpg",
-      roughness: "/hero3d/textures/wood-walnut/roughness.jpg",
+      albedo: "/hero3d/textures/wood-walnut/albedo.webp",
+      normal: "/hero3d/textures/wood-walnut/normal.webp",
+      roughness: "/hero3d/textures/wood-walnut/roughness.webp",
     },
     oak: {
-      albedo: "/hero3d/textures/wood-oak/albedo.jpg",
-      normal: "/hero3d/textures/wood-oak/normal.jpg",
-      roughness: "/hero3d/textures/wood-oak/roughness.jpg",
+      albedo: "/hero3d/textures/wood-oak/albedo.webp",
+      normal: "/hero3d/textures/wood-oak/normal.webp",
+      roughness: "/hero3d/textures/wood-oak/roughness.webp",
     },
     teak: {
-      albedo: "/hero3d/textures/wood-teak/albedo.jpg",
-      normal: "/hero3d/textures/wood-teak/normal.jpg",
-      roughness: "/hero3d/textures/wood-teak/roughness.jpg",
+      albedo: "/hero3d/textures/wood-teak/albedo.webp",
+      normal: "/hero3d/textures/wood-teak/normal.webp",
+      roughness: "/hero3d/textures/wood-teak/roughness.webp",
     },
     rosewood: {
-      albedo: "/hero3d/textures/wood-walnut/albedo.jpg",
-      normal: "/hero3d/textures/wood-walnut/normal.jpg",
-      roughness: "/hero3d/textures/wood-walnut/roughness.jpg",
+      albedo: "/hero3d/textures/wood-walnut/albedo.webp",
+      normal: "/hero3d/textures/wood-walnut/normal.webp",
+      roughness: "/hero3d/textures/wood-walnut/roughness.webp",
     },
   },
   steel: {
-    albedo: "/hero3d/textures/steel/albedo.jpg",
-    normal: "/hero3d/textures/steel/normal.jpg",
-    roughness: "/hero3d/textures/steel/roughness.jpg",
-    metalness: "/hero3d/textures/steel/metalness.jpg",
+    albedo: "/hero3d/textures/steel/albedo.webp",
+    normal: "/hero3d/textures/steel/normal.webp",
+    roughness: "/hero3d/textures/steel/roughness.webp",
+    metalness: "/hero3d/textures/steel/metalness.webp",
   },
   floor: {
-    albedo: "/hero3d/textures/floor/albedo.jpg",
-    normal: "/hero3d/textures/floor/normal.jpg",
-    roughness: "/hero3d/textures/floor/roughness.jpg",
+    /** Albedo only — normal/roughness unused on WorkshopFloor. */
+    albedo: "/hero3d/textures/floor/albedo.webp",
   },
-  hdri: "/hero3d/hdri/workshop-2k.hdr",
+  hdri: "/hero3d/hdri/workshop-1k.hdr",
   bladeModel: "/hero3d/models/saw-blade.glb",
 } as const;
 
@@ -86,8 +88,6 @@ export const PBR_MOBILE = {
   },
   floor: {
     albedo: "/hero3d/floor-concrete.jpg",
-    normal: "/hero3d/floor-concrete.jpg",
-    roughness: "/hero3d/floor-concrete.jpg",
   },
   hdri: null as string | null,
   bladeModel: "/hero3d/models/saw-blade.glb",
@@ -110,8 +110,6 @@ export function textureUrlsFor(mobile: boolean): string[] {
     p.steel.normal,
     p.steel.roughness,
     p.floor.albedo,
-    p.floor.normal,
-    p.floor.roughness,
   ];
   if (!mobile && "metalness" in p.steel && p.steel.metalness) {
     urls.push(p.steel.metalness);

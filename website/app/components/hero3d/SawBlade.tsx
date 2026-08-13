@@ -28,36 +28,42 @@ type Props = {
 function makeSteelMaterial(steel: TexturePack, variant: "disc" | "edge" | "hub") {
   if (variant === "edge") {
     return new THREE.MeshPhysicalMaterial({
-      color: BLADE.highlight,
+      color: "#d8dee6",
       metalness: 1,
-      roughness: 0.1,
-      envMapIntensity: 2.0,
-      clearcoat: 0.5,
-      clearcoatRoughness: 0.12,
+      roughness: 0.06,
+      envMapIntensity: 2.8,
+      clearcoat: 0.65,
+      clearcoatRoughness: 0.08,
+      // Thin bright rim so the silhouette never collapses into the dark void
+      emissive: new THREE.Color("#6a7480"),
+      emissiveIntensity: 0.12,
     });
   }
   if (variant === "hub") {
     return new THREE.MeshStandardMaterial({
       color: BLADE.hub,
       map: steel.map,
-      metalness: 0.92,
-      roughness: 0.32,
-      envMapIntensity: 1.35,
+      metalness: 0.95,
+      roughness: 0.26,
+      envMapIntensity: 1.7,
     });
   }
   return new THREE.MeshPhysicalMaterial({
-    // Lighter base so HDRI + steel maps read as polished gunmetal (not void black)
-    color: "#b0b8c2",
+    // Cool polished gunmetal — light enough that HDRI reflections read as steel
+    color: "#c4ccd6",
     map: steel.map,
     normalMap: steel.normalMap,
-    normalScale: new THREE.Vector2(1.1, 1.1),
+    normalScale: new THREE.Vector2(0.85, 0.85),
     roughnessMap: steel.roughnessMap,
     // Skip sparse metalness maps that crush metalness to 0
-    metalness: 0.98,
-    roughness: 0.18,
-    envMapIntensity: 2.35,
-    clearcoat: 0.45,
-    clearcoatRoughness: 0.2,
+    metalness: 1,
+    roughness: 0.12,
+    envMapIntensity: 2.85,
+    clearcoat: 0.55,
+    clearcoatRoughness: 0.14,
+    // Soft fill so the disc never reads as a black silhouette under dark HDRI
+    emissive: new THREE.Color("#3a424c"),
+    emissiveIntensity: 0.08,
   });
 }
 
@@ -154,16 +160,30 @@ export function SawBlade({ reducedMotion, bladeRef, steel, mobile }: Props) {
       {/* Prefer GLTF; if Suspense never resolves, parent fallback handles it */}
       <GltfBlade steel={steel} />
       {/* Decorative rim remains sharp even if GLTF UVs are soft */}
+      {/* Specular cutting rim — always on so the blade edge catches light */}
+      <mesh castShadow>
+        <torusGeometry args={[BLADE.radius * 0.99, mobile ? 0.014 : 0.013, 8, mobile ? 48 : 72]} />
+        <meshPhysicalMaterial
+          color="#e8eef5"
+          metalness={1}
+          roughness={0.05}
+          envMapIntensity={3.1}
+          clearcoat={0.7}
+          clearcoatRoughness={0.08}
+          emissive="#8a95a2"
+          emissiveIntensity={0.18}
+        />
+      </mesh>
       {!mobile && (
         <mesh castShadow>
-          <torusGeometry args={[BLADE.radius * 0.99, 0.012, 8, 64]} />
+          <torusGeometry args={[BLADE.radius * 0.72, 0.006, 6, 48]} />
           <meshPhysicalMaterial
-            color={BLADE.highlight}
+            color="#aeb8c4"
             metalness={1}
-            roughness={0.08}
-            envMapIntensity={2.2}
-            clearcoat={0.6}
-            clearcoatRoughness={0.1}
+            roughness={0.14}
+            envMapIntensity={2.4}
+            emissive="#4a525c"
+            emissiveIntensity={0.06}
           />
         </mesh>
       )}

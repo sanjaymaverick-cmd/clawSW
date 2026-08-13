@@ -22,8 +22,8 @@
  *
  * Assets (CC0)
  * ------------
- *   public/hero3d/textures/   ambientCG 2K wood/steel/floor
- *   public/hero3d/hdri/       Poly Haven machine_shop_02 2K
+ *   public/hero3d/textures/   ambientCG → 1024 WebP wood/steel/floor
+ *   public/hero3d/hdri/       Poly Haven machine_shop_02 1K
  *   public/hero3d/models/     saw-blade.glb
  * See public/hero3d/README.md for licenses & replacement.
  */
@@ -133,7 +133,7 @@ export default function Hero3D({ sectionRef, className, style }: Hero3DProps) {
           alpha: true,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.05,
+          toneMappingExposure: 1.12,
         }}
         camera={{
           fov: CAMERA.fov,
@@ -146,7 +146,8 @@ export default function Hero3D({ sectionRef, className, style }: Hero3DProps) {
           gl.setClearColor(0x08090c, 0);
           gl.outputColorSpace = THREE.SRGBColorSpace;
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.08;
+          // Slight lift so gunmetal reads under dark workshop HDRI
+          gl.toneMappingExposure = 1.18;
         }}
         style={{ width: "100%", height: "100%", display: "block" }}
       >

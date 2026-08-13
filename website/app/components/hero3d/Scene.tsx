@@ -54,7 +54,7 @@ import {
 } from "./config";
 
 // ---------------------------------------------------------------------------
-// Photoreal maps — ambientCG 2K desktop / Imagine mobile
+// Photoreal maps — ambientCG 1024 WebP desktop / Imagine mobile
 // ---------------------------------------------------------------------------
 
 type PhotoAssets = {
@@ -66,6 +66,7 @@ type PhotoAssets = {
 function usePhotoAssets(mobile: boolean): PhotoAssets {
   const pack = mobile ? PBR_MOBILE : PBR_2K;
 
+  // Floor: albedo only (WorkshopFloor does not use normal/roughness yet)
   const urls = [
     pack.wood.walnut.albedo,
     pack.wood.walnut.normal,
@@ -80,8 +81,6 @@ function usePhotoAssets(mobile: boolean): PhotoAssets {
     pack.steel.normal,
     pack.steel.roughness,
     pack.floor.albedo,
-    pack.floor.normal,
-    pack.floor.roughness,
     // metalness only on desktop steel pack
     !mobile && "metalness" in pack.steel && pack.steel.metalness
       ? pack.steel.metalness
@@ -105,8 +104,6 @@ function usePhotoAssets(mobile: boolean): PhotoAssets {
       sN,
       sR,
       fA,
-      fN,
-      fR,
       sM,
     ] = maps;
 
@@ -136,9 +133,6 @@ function usePhotoAssets(mobile: boolean): PhotoAssets {
       repeat: [3.2, 3.2],
       anisotropy: aniso,
     });
-    // Keep normal/rough available on floor material via userData if needed later
-    void fN;
-    void fR;
 
     return { wood, steel, floor: floorTex };
   }, [maps, mobile]);
@@ -234,7 +228,7 @@ function SceneEnvironment({ mobile }: { mobile: boolean }) {
   return (
     <Environment
       files={PBR_2K.hdri}
-      environmentIntensity={1.05}
+      environmentIntensity={1.2}
       background={false}
     />
   );
@@ -758,7 +752,7 @@ export function HeroScene({ quality, sectionRef }: SceneProps) {
   const parallaxGroup = useRef<THREE.Group>(null);
   const bladeRef = useRef<THREE.Group>(null);
   const dustCount = quality.isMobile ? COUNTS.dust.mobile : COUNTS.dust.desktop;
-  // 2K CC0 maps (desktop) / lighter maps (mobile) — suspends under parent <Suspense>
+  // 1024 WebP (desktop) / lighter maps (mobile) — suspends under parent <Suspense>
   const photos = usePhotoAssets(quality.isMobile);
 
   return (
