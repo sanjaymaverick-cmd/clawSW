@@ -18,15 +18,15 @@ export default async function CatalogPage() {
       <PageIntro
         eyebrow="Spares & Tools"
         title="Genuine spares & tools,"
-        highlight="in stock and ready."
-        description="Set quantities on what you need and place an order online — we confirm every order by phone or email before dispatch."
+        highlight="for the machines we supply."
+        description="Set quantities on what you need and place an order online — we confirm price and availability by phone or email before dispatch."
       />
 
       <section className="container" style={{ paddingBottom: "clamp(56px, 9vw, 110px)" }}>
         <div className="trust-strip" aria-label="Why order spares with us">
-          <span className="trust-strip-item">Genuine OEM-grade parts</span>
-          <span className="trust-strip-item">Stocked in India</span>
-          <span className="trust-strip-item">Confirm before dispatch</span>
+          <span className="trust-strip-item">Genuine, machine-matched spares</span>
+          <span className="trust-strip-item">Sourced for your model</span>
+          <span className="trust-strip-item">Confirmed before dispatch</span>
           <span className="trust-strip-item">Pan-India service support</span>
         </div>
 

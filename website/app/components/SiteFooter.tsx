@@ -109,6 +109,26 @@ export default function SiteFooter() {
           style={{
             display: "flex",
             flexWrap: "wrap",
+            gap: "8px 18px",
+            marginBottom: 16,
+            fontSize: "0.82rem",
+          }}
+        >
+          {[
+            { label: "Privacy Policy", href: "/privacy" },
+            { label: "Terms of Use", href: "/terms" },
+            { label: "Returns & Refunds", href: "/refund-policy" },
+          ].map((l) => (
+            <Link key={l.href} href={l.href} className="muted">
+              {l.label}
+            </Link>
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
             gap: 12,
             justifyContent: "space-between",
             alignItems: "center",
@@ -117,10 +137,27 @@ export default function SiteFooter() {
           }}
         >
           <span>
-            © {new Date().getFullYear()} {company.name}. All rights reserved.
+            © {new Date().getFullYear()} {company.legalName ?? company.name}. All
+            rights reserved.
           </span>
           <span>Jodhpur · Direct import · Pan-India service</span>
         </div>
+
+        {(company.cin || company.gstin) && (
+          <div
+            style={{
+              marginTop: 10,
+              color: "var(--text-dim)",
+              fontSize: "0.76rem",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "4px 16px",
+            }}
+          >
+            {company.cin && <span>CIN: {company.cin}</span>}
+            {company.gstin && <span>GSTIN: {company.gstin}</span>}
+          </div>
+        )}
       </div>
 
       <style>{`

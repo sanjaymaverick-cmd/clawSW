@@ -53,10 +53,13 @@ export type Category = {
 
 export type Company = {
   name: string;
+  legalName?: string;
   tagline: string;
   founded: string;
   hq: string;
   address: string;
+  gstin?: string;
+  cin?: string;
   phones: string[];
   emails: string[];
   social: { instagram?: string; facebook?: string };
