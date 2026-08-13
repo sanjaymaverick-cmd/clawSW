@@ -315,6 +315,12 @@ function ExplorerOverlay({
       {!part && (
         <div className="explorer-hint">
           Click a part to inspect · {machine.name}
+          {!machine.glbUrl && (
+            <span style={{ opacity: 0.7 }}>
+              {" "}
+              · Preview geometry — representative, not a scan of this exact model
+            </span>
+          )}
         </div>
       )}
     </div>

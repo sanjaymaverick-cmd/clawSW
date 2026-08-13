@@ -51,7 +51,7 @@ export default async function ProductExplorerPage({ params }: Props) {
             ← All machinery
           </Link>
           <Link
-            href={`/machinery/${machine.slug}`}
+            href={`/machinery/${machine.productSlug ?? machine.slug}`}
             className="text-ink-muted hover:text-wood"
           >
             Specs &amp; enquiry

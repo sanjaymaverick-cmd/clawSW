@@ -83,7 +83,7 @@ export default function WorkbenchUI() {
 
       <div className="workbench-actions">
         <button type="button" className="explorer-chip" onClick={dropSampleKit}>
-          Drop sample kit
+          Load sample kit
         </button>
         <button type="button" className="explorer-chip" onClick={clearWorkbench}>
           Clear bench
@@ -99,8 +99,8 @@ export default function WorkbenchUI() {
       </div>
 
       <p className="workbench-hint">
-        Grab any tool — it becomes kinematic while you drag, then settles with
-        damping on the wooden bench. Orbit the camera when not dragging.
+        Grab any tool — it follows your pointer while you drag, then settles
+        naturally onto the bench. Orbit the camera when not dragging.
       </p>
     </div>
   );

@@ -63,22 +63,18 @@ export default function ViewInARButton({
     return "#";
   }, [glbUrl, usdzUrl, title]);
 
-  const onClick = (e: React.MouseEvent) => {
-    if (!hasAsset) {
-      e.preventDefault();
-      setHint(
-        "AR model not attached yet. Place a simplified GLB/USDZ under /public/models/ar/ and set glbUrl on the machine."
-      );
-      return;
-    }
+  const onClick = () => {
     if (!isIOS() && !isAndroid() && glbUrl) {
       // Desktop: download / open GLB
-      setHint("Open on a phone for AR, or download the GLB model.");
+      setHint("Open on a phone for AR, or download the 3D model.");
     }
   };
 
   const pad = size === "sm" ? "8px 12px" : "11px 16px";
   const fontSize = size === "sm" ? "0.8rem" : "0.88rem";
+
+  // No real AR asset yet — don't advertise a feature that isn't there.
+  if (!hasAsset) return null;
 
   return (
     <div className={className} style={{ display: "inline-flex", flexDirection: "column", gap: 6 }}>

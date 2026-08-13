@@ -238,7 +238,7 @@ export default function Home() {
             {
               href: "/workbench",
               title: "Physics Workbench",
-              d: "Drag tools and spares on a wooden bench — kinematic placement, damped settle.",
+              d: "Drag tools and spares onto a wooden bench and see them settle naturally.",
               cta: "Open workbench",
             },
             {

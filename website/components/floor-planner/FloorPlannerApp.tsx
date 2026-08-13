@@ -11,7 +11,6 @@ import CatalogPanel from "./CatalogPanel";
 import PropertiesPanel from "./PropertiesPanel";
 import SavedLayoutsPanel from "./SavedLayoutsPanel";
 import ExportMenu from "./ExportMenu";
-import ViewInARButton from "@/components/3d/ViewInARButton";
 import { useFloorPlannerStore } from "@/lib/stores/useFloorPlannerStore";
 
 const FloorPlannerCanvas = dynamic(
@@ -26,7 +25,6 @@ const FloorPlannerCanvas = dynamic(
 
 export default function FloorPlannerApp() {
   const mode = useFloorPlannerStore((s) => s.mode);
-  const placingMachineId = useFloorPlannerStore((s) => s.placingMachineId);
   const machines = useFloorPlannerStore((s) => s.machines);
 
   return (
@@ -38,20 +36,13 @@ export default function FloorPlannerApp() {
           </Link>
           <h1>Workshop Floor Planner</h1>
           <p>
-            {machines.length} machine{machines.length === 1 ? "" : "s"} on floor
-            · mode <strong>{mode}</strong>
-            {mode === "place" && placingMachineId
-              ? ` · place: ${placingMachineId}`
-              : ""}
-            . Select a catalog machine, click the floor to place, drag to move.
+            {machines.length} machine{machines.length === 1 ? "" : "s"} on floor.
+            {mode === "place"
+              ? " Click the floor to place the selected machine, then drag to position it."
+              : " Select a machine from the catalog, click the floor to place, drag to move."}
           </p>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-          <ViewInARButton
-            glbUrl="/hero3d/models/saw-blade.glb"
-            title="Workshop layout preview"
-            size="sm"
-          />
           <ExportMenu />
         </div>
       </header>
