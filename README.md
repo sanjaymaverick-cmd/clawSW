@@ -62,11 +62,24 @@ cp .env.example .env   # then edit: set real passwords + JWT secret
 docker compose up --build
 ```
 
-- Internal dashboard: http://localhost:8080 — sign in with the
-  `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env` (an owner account is
-  seeded on first startup)
-- Public website: http://localhost:3000
-- API docs (OpenAPI): http://localhost:8000/docs
+**Single front door (gateway)** — Sanjay Wood Tech public site + staff tools:
+
+| URL | What |
+|---|---|
+| http://localhost:8080/ | Public website |
+| http://localhost:8080/login | **Staff sign-in** (footer “Staff login”) |
+| http://localhost:8080/app/ | Staff dashboard (after login) |
+| http://localhost:8080/api/… | API (same origin) |
+| http://localhost:3000 | Website only (optional; login needs gateway for `/app`) |
+| http://localhost:8000/docs | API OpenAPI docs |
+
+Sign in with `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env` (an owner
+account is seeded on first startup). The JWT is stored under the gateway
+origin so `/login` and `/app` share it.
+
+**All six roles for testing:** set `SEED_DEMO_DATA=true` and use the accounts
+in [docs/TEST_LOGINS.md](docs/TEST_LOGINS.md) (shared password
+`demo-password` when configured as in that doc).
 
 Postgres is not exposed to the host network; data persists in `./pgdata`.
 
@@ -279,8 +292,9 @@ cloud rehearsal box.
 
 ```
 api/        FastAPI backend — auth, RBAC (permissions table), users admin
-dashboard/  React + Vite + Tailwind internal dashboard
-website/    Next.js public site — catalog, brochures, projects, demo booking
+dashboard/  React + Vite + Tailwind staff UI (served at /app/)
+website/    Next.js public site + /login — Sanjay Wood Tech front door
+gateway/    nginx: local front door for site, staff login, dashboard, API (:8080)
 scripts/    encrypted backup cron + restore (Phase 6); firewall hardening (Phase 10)
 docs/       BLUEPRINT.md — architecture & build plan (source of truth)
 Caddyfile   reverse proxy + automatic HTTPS for remote deploys (Phase 10)
@@ -299,11 +313,15 @@ cd api && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 #   cd api && .venv/bin/alembic revision --autogenerate -m "describe change"
 # The test suite fails if models drift from migrations (test_migrations.py).
 
-# Dashboard (proxies /api to localhost:8000)
-cd dashboard && npm install && npm run dev     # http://localhost:5173
+# Dashboard (base /app/; proxies /api to localhost:8000)
+cd dashboard && npm install && npm run dev     # http://localhost:5173/app/
 
-# Website
+# Website (for split dev without gateway, set NEXT_PUBLIC_API_URL and
+# NEXT_PUBLIC_DASHBOARD_URL — see .env.example comments)
 cd website && npm install && npm run dev       # http://localhost:3000
+# Staff login → set NEXT_PUBLIC_DASHBOARD_URL=http://localhost:5173/app/
+# and NEXT_PUBLIC_API_URL=http://localhost:8000 so the token is handed off
+# via URL hash when origins differ.
 ```
 
 ## Working on this repo with Claude Code

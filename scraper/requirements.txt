@@ -1,0 +1,5 @@
+requests>=2.31
+beautifulsoup4>=4.12
+urllib3>=2.0
+# Optional — only needed if you run with --render (JavaScript-heavy pages):
+playwright>=1.40

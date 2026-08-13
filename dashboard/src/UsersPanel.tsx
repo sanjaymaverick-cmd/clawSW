@@ -62,13 +62,13 @@ export default function UsersPanel({
   }
 
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-4">
-      <h2 className="text-lg font-semibold text-slate-800">Users</h2>
+    <section className="staff-card p-6 space-y-4">
+      <h2 className="staff-card-title">Users</h2>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="text-left text-slate-500 border-b border-slate-200">
+            <tr className="text-left text-[var(--dim)] border-b border-[var(--border)]">
               <th className="py-2 pr-4">Name</th>
               <th className="py-2 pr-4">Email</th>
               <th className="py-2 pr-4">Role</th>
@@ -78,11 +78,11 @@ export default function UsersPanel({
           </thead>
           <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="border-b border-slate-100">
-                <td className="py-2 pr-4 font-medium text-slate-800">{u.name}</td>
-                <td className="py-2 pr-4 text-slate-600">{u.email}</td>
+              <tr key={u.id} className="border-b border-[var(--border)]">
+                <td className="py-2 pr-4 font-medium text-[var(--text)]">{u.name}</td>
+                <td className="py-2 pr-4 text-[var(--muted)]">{u.email}</td>
                 <td className="py-2 pr-4">
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                  <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-xs font-medium text-[var(--text)]">
                     {u.role}
                   </span>
                 </td>
@@ -90,7 +90,7 @@ export default function UsersPanel({
                   {u.active ? (
                     <span className="text-green-700">active</span>
                   ) : (
-                    <span className="text-slate-400">deactivated</span>
+                    <span className="text-[var(--dim)]">deactivated</span>
                   )}
                 </td>
                 {canWrite && (
@@ -112,13 +112,13 @@ export default function UsersPanel({
       </div>
 
       {canWrite && (
-        <form onSubmit={createUser} className="grid gap-2 sm:grid-cols-5 pt-2 border-t border-slate-200">
+        <form onSubmit={createUser} className="grid gap-2 sm:grid-cols-5 pt-2 border-t border-[var(--border)]">
           <input
             required
             placeholder="Name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-[var(--border-strong)] px-2 py-1.5 text-sm"
           />
           <input
             required
@@ -126,7 +126,7 @@ export default function UsersPanel({
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-[var(--border-strong)] px-2 py-1.5 text-sm"
           />
           <input
             required
@@ -135,12 +135,12 @@ export default function UsersPanel({
             minLength={8}
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-[var(--border-strong)] px-2 py-1.5 text-sm"
           />
           <select
             value={form.role}
             onChange={(e) => setForm({ ...form, role: e.target.value })}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm bg-white"
+            className="rounded-md border border-[var(--border-strong)] px-2 py-1.5 text-sm bg-white"
           >
             {ROLES.map((r) => (
               <option key={r} value={r}>
@@ -150,7 +150,7 @@ export default function UsersPanel({
           </select>
           <button
             type="submit"
-            className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700"
+            className="rounded-md staff-btn staff-btn-primary"
           >
             Add user
           </button>

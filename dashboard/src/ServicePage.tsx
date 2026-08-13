@@ -8,16 +8,16 @@ import {
   Technician,
   Warehouse,
 } from "./api";
+import { Badge, Button, Card } from "./ui";
 
-const inputCls = "rounded-md border border-slate-300 px-2 py-1.5 text-sm";
-const buttonCls =
-  "rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50";
-
-const STATUS_STYLE: Record<ServiceJob["status"], string> = {
-  open: "bg-slate-100 text-slate-700",
-  in_progress: "bg-blue-50 text-blue-700",
-  completed: "bg-green-50 text-green-700",
-  billed: "bg-purple-50 text-purple-700",
+const STATUS_TONE: Record<
+  ServiceJob["status"],
+  "neutral" | "info" | "ok" | "wood"
+> = {
+  open: "neutral",
+  in_progress: "info",
+  completed: "ok",
+  billed: "wood",
 };
 
 const NEXT_STATUS: Partial<
@@ -42,6 +42,9 @@ export default function ServicePage({
   const [items, setItems] = useState<Item[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | ServiceJob["status"]
+  >("all");
   const [form, setForm] = useState({
     customer_name: "",
     assigned_technician_id: "",
@@ -76,13 +79,10 @@ export default function ServicePage({
 
   return (
     <div className="space-y-6">
-      {error && (
-        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
-      )}
+      {error && <p className="staff-alert staff-alert-error">{error}</p>}
 
       {canWrite && !isTechnician && (
-        <section className="bg-white rounded-xl shadow p-6 space-y-3">
-          <h2 className="text-lg font-semibold text-slate-800">New service job</h2>
+        <Card title="New service job">
           <form
             className="flex flex-wrap gap-2"
             onSubmit={async (e) => {
@@ -93,43 +93,95 @@ export default function ServicePage({
                   assigned_technician_id: form.assigned_technician_id,
                   description: form.description || undefined,
                 });
-                setForm({ customer_name: "", assigned_technician_id: "", description: "" });
+                setForm({
+                  customer_name: "",
+                  assigned_technician_id: "",
+                  description: "",
+                });
                 await refresh();
               } catch (err) {
                 onError(err, "Failed to create job");
               }
             }}
           >
-            <input required placeholder="Customer" value={form.customer_name}
-              className={inputCls}
-              onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
-            <select required value={form.assigned_technician_id}
-              className={`${inputCls} bg-white`}
+            <input
+              required
+              placeholder="Customer"
+              value={form.customer_name}
+              className="staff-input"
+              onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
+            />
+            <select
+              required
+              value={form.assigned_technician_id}
+              className="staff-select"
               onChange={(e) =>
                 setForm({ ...form, assigned_technician_id: e.target.value })
-              }>
+              }
+            >
               <option value="">Assign to…</option>
               {technicians.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
               ))}
             </select>
-            <input placeholder="Description" value={form.description}
-              className={`${inputCls} flex-1 min-w-40`}
-              onChange={(e) => setForm({ ...form, description: e.target.value })} />
-            <button type="submit" className={buttonCls}>Create</button>
+            <input
+              placeholder="Description"
+              value={form.description}
+              className="staff-input flex-1 min-w-40"
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+            />
+            <Button type="submit" variant="primary">
+              Create
+            </Button>
           </form>
-        </section>
+        </Card>
       )}
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">
-          {isTechnician ? "My jobs" : "Service jobs"}
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "1rem",
+              fontWeight: 600,
+              color: "var(--text)",
+            }}
+          >
+            {isTechnician ? "My jobs" : "Service jobs"}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {(
+              [
+                ["all", "All"],
+                ["open", "Open"],
+                ["in_progress", "In progress"],
+                ["completed", "Completed"],
+                ["billed", "Billed"],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={`staff-btn ${statusFilter === key ? "staff-btn-primary" : ""}`}
+                style={{ padding: "6px 12px", fontSize: "0.8rem" }}
+                onClick={() => setStatusFilter(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         {jobs.length === 0 && (
-          <p className="text-sm text-slate-400">No service jobs yet.</p>
+          <p style={{ fontSize: "0.875rem", color: "var(--dim)" }}>
+            No service jobs yet.
+          </p>
         )}
         <div className="grid gap-4 md:grid-cols-2">
-          {jobs.map((job) => (
+          {jobs
+            .filter((j) => statusFilter === "all" || j.status === statusFilter)
+            .map((job) => (
             <JobCard
               key={job.id}
               token={token}
@@ -143,6 +195,13 @@ export default function ServicePage({
             />
           ))}
         </div>
+        {jobs.length > 0 &&
+          jobs.filter((j) => statusFilter === "all" || j.status === statusFilter)
+            .length === 0 && (
+            <p style={{ fontSize: "0.875rem", color: "var(--dim)" }}>
+              No jobs with this status.
+            </p>
+          )}
       </section>
     </div>
   );
@@ -193,34 +252,59 @@ function JobCard({
     canWrite && (job.status === "open" || job.status === "in_progress");
 
   return (
-    <div className="bg-white rounded-xl shadow p-5 space-y-3">
+    <div className="staff-card space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="font-semibold text-slate-800">{job.customer_name}</h3>
-          <p className="text-xs text-slate-500">
+          <h3 style={{ margin: 0, fontWeight: 600, color: "var(--text)" }}>
+            {job.customer_name}
+          </h3>
+          <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "var(--dim)" }}>
             {job.technician_name} · {new Date(job.created_at).toLocaleDateString()}
           </p>
         </div>
-        <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ${STATUS_STYLE[job.status]}`}
-        >
+        <Badge tone={STATUS_TONE[job.status]}>
           {job.status.replace("_", " ")}
-        </span>
+        </Badge>
       </div>
 
       {job.description && (
-        <p className="text-sm text-slate-600">{job.description}</p>
+        <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--muted)" }}>
+          {job.description}
+        </p>
       )}
 
       {parts && parts.length > 0 && (
-        <ul className="text-sm text-slate-700 space-y-0.5">
+        <ul
+          style={{
+            margin: 0,
+            padding: 0,
+            listStyle: "none",
+            fontSize: "0.875rem",
+            color: "var(--muted)",
+          }}
+        >
           {parts.map((p) => (
-            <li key={p.id} className="flex justify-between">
+            <li
+              key={p.id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "4px 0",
+              }}
+            >
               <span>
-                <span className="font-mono text-xs text-slate-500">{p.sku}</span>{" "}
+                <span
+                  style={{
+                    fontFamily: "ui-monospace, monospace",
+                    fontSize: "0.75rem",
+                    color: "var(--dim)",
+                  }}
+                >
+                  {p.sku}
+                </span>{" "}
                 {p.item_name}
               </span>
-              <span className="text-slate-500">
+              <span style={{ color: "var(--dim)" }}>
                 {p.quantity} {p.unit ?? ""}
               </span>
             </li>
@@ -230,7 +314,8 @@ function JobCard({
 
       {canAddParts && (
         <form
-          className="flex flex-wrap gap-2 pt-2 border-t border-slate-100"
+          className="flex flex-wrap gap-2 pt-2"
+          style={{ borderTop: "1px solid var(--border)" }}
           onSubmit={async (e) => {
             e.preventDefault();
             try {
@@ -246,34 +331,53 @@ function JobCard({
             }
           }}
         >
-          <select required value={partForm.item_id}
-            className={`${inputCls} bg-white flex-1 min-w-32`}
-            onChange={(e) => setPartForm({ ...partForm, item_id: e.target.value })}>
+          <select
+            required
+            value={partForm.item_id}
+            className="staff-select flex-1 min-w-32"
+            onChange={(e) => setPartForm({ ...partForm, item_id: e.target.value })}
+          >
             <option value="">Part used…</option>
             {items.map((i) => (
-              <option key={i.id} value={i.id}>{i.sku} — {i.name}</option>
+              <option key={i.id} value={i.id}>
+                {i.sku} — {i.name}
+              </option>
             ))}
           </select>
-          <select required value={partForm.warehouse_id}
-            className={`${inputCls} bg-white`}
+          <select
+            required
+            value={partForm.warehouse_id}
+            className="staff-select"
             onChange={(e) =>
               setPartForm({ ...partForm, warehouse_id: e.target.value })
-            }>
+            }
+          >
             <option value="">From…</option>
             {warehouses.map((w) => (
-              <option key={w.id} value={w.id}>{w.name}</option>
+              <option key={w.id} value={w.id}>
+                {w.name}
+              </option>
             ))}
           </select>
-          <input required type="number" min="0.001" step="any" placeholder="Qty"
-            value={partForm.quantity} className={`${inputCls} w-20`}
-            onChange={(e) => setPartForm({ ...partForm, quantity: e.target.value })} />
-          <button type="submit" className={buttonCls}>Use</button>
+          <input
+            required
+            type="number"
+            min="0.001"
+            step="any"
+            placeholder="Qty"
+            value={partForm.quantity}
+            className="staff-input w-20"
+            onChange={(e) => setPartForm({ ...partForm, quantity: e.target.value })}
+          />
+          <Button type="submit" variant="primary">
+            Use
+          </Button>
         </form>
       )}
 
       {showAdvance && next && (
-        <button
-          className="w-full rounded-md border border-blue-600 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+        <Button
+          style={{ width: "100%" }}
           onClick={async () => {
             try {
               await api.updateServiceJob(token, job.id, { status: next.to });
@@ -284,7 +388,7 @@ function JobCard({
           }}
         >
           {next.label}
-        </button>
+        </Button>
       )}
     </div>
   );

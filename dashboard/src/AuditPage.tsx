@@ -37,19 +37,19 @@ export default function AuditPage({ token }: { token: string }) {
 
   if (error && !entries) {
     return (
-      <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
+      <p className="staff-alert staff-alert-error">{error}</p>
     );
   }
   if (!entries) {
-    return <p className="text-sm text-slate-400">Loading…</p>;
+    return <p className="text-sm text-[var(--dim)]">Loading…</p>;
   }
 
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-3">
+    <section className="staff-card p-6 space-y-3">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">Audit log</h2>
-          <p className="text-sm text-slate-500">
+          <h2 className="staff-card-title">Audit log</h2>
+          <p className="text-sm text-[var(--dim)]">
             Every write to users, stock moves, service jobs and website orders,
             recorded automatically. “no user” = public website or sync worker.
           </p>
@@ -58,7 +58,7 @@ export default function AuditPage({ token }: { token: string }) {
           <select
             value={resource}
             onChange={(e) => setResource(e.target.value)}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-[var(--border-strong)] px-2 py-1.5 text-sm"
           >
             {RESOURCES.map((r) => (
               <option key={r} value={r}>
@@ -69,7 +69,7 @@ export default function AuditPage({ token }: { token: string }) {
           <select
             value={action}
             onChange={(e) => setAction(e.target.value)}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-[var(--border-strong)] px-2 py-1.5 text-sm"
           >
             {ACTIONS.map((a) => (
               <option key={a} value={a}>
@@ -81,15 +81,15 @@ export default function AuditPage({ token }: { token: string }) {
       </div>
 
       {error && (
-        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
+        <p className="staff-alert staff-alert-error">{error}</p>
       )}
 
       {entries.length === 0 ? (
-        <p className="text-sm text-slate-400">No audit entries match.</p>
+        <p className="text-sm text-[var(--dim)]">No audit entries match.</p>
       ) : (
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+            <tr className="text-left text-xs uppercase tracking-wide text-[var(--dim)]">
               <th className="py-2 pr-4">When</th>
               <th className="py-2 pr-4">Who</th>
               <th className="py-2 pr-4">Action</th>
@@ -102,11 +102,11 @@ export default function AuditPage({ token }: { token: string }) {
             {entries.map((e) => (
               <Fragment key={e.id}>
                 <tr>
-                  <td className="py-2 pr-4 text-slate-600 whitespace-nowrap">
+                  <td className="py-2 pr-4 text-[var(--muted)] whitespace-nowrap">
                     {new Date(e.created_at).toLocaleString()}
                   </td>
-                  <td className="py-2 pr-4 text-slate-800">
-                    {e.user_name ?? <span className="text-slate-400">no user</span>}
+                  <td className="py-2 pr-4 text-[var(--text)]">
+                    {e.user_name ?? <span className="text-[var(--dim)]">no user</span>}
                   </td>
                   <td className="py-2 pr-4">
                     <span
@@ -115,13 +115,13 @@ export default function AuditPage({ token }: { token: string }) {
                       {e.action}
                     </span>
                   </td>
-                  <td className="py-2 pr-4 text-slate-600">
+                  <td className="py-2 pr-4 text-[var(--muted)]">
                     {e.resource.replace("_", " ")}{" "}
-                    <span className="text-slate-400">
+                    <span className="text-[var(--dim)]">
                       {e.resource_id.slice(0, 8)}
                     </span>
                   </td>
-                  <td className="py-2 pr-4 text-slate-600">{e.ip_address ?? ""}</td>
+                  <td className="py-2 pr-4 text-[var(--muted)]">{e.ip_address ?? ""}</td>
                   <td className="py-2 text-right">
                     <button
                       onClick={() =>
@@ -136,7 +136,7 @@ export default function AuditPage({ token }: { token: string }) {
                 {expanded === e.id && (
                   <tr>
                     <td colSpan={6} className="pb-3">
-                      <pre className="overflow-x-auto rounded-md bg-slate-50 p-3 text-xs text-slate-700">
+                      <pre className="overflow-x-auto rounded-md bg-slate-50 p-3 text-xs text-[var(--text)]">
                         {JSON.stringify(e.payload_snapshot, null, 2)}
                       </pre>
                     </td>

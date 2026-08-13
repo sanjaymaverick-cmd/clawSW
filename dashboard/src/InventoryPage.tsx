@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, Item, StockLevel, StockMove, Warehouse } from "./api";
 
-const inputCls = "rounded-md border border-slate-300 px-2 py-1.5 text-sm";
-const buttonCls =
-  "rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50";
+const inputCls = "staff-input";
+const buttonCls = "staff-btn staff-btn-primary";
 
 export default function InventoryPage({
   token,
@@ -46,7 +45,7 @@ export default function InventoryPage({
   return (
     <div className="space-y-6">
       {error && (
-        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
+        <p className="staff-alert staff-alert-error">{error}</p>
       )}
 
       <ItemsSection
@@ -122,14 +121,53 @@ function ItemsSection({
   };
   const [form, setForm] = useState(empty);
   const [flags, setFlags] = useState({ is_spare: false, is_tool: false });
+  const [filter, setFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "spare" | "tool">("all");
+
+  const filtered = items.filter((i) => {
+    const q = filter.trim().toLowerCase();
+    const matchesQ =
+      !q ||
+      i.sku.toLowerCase().includes(q) ||
+      i.name.toLowerCase().includes(q) ||
+      (i.category ?? "").toLowerCase().includes(q);
+    const matchesType =
+      typeFilter === "all" ||
+      (typeFilter === "spare" && i.is_spare) ||
+      (typeFilter === "tool" && i.is_tool);
+    return matchesQ && matchesType;
+  });
 
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-4">
-      <h2 className="text-lg font-semibold text-slate-800">Items</h2>
+    <section className="staff-card space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="staff-card-title" style={{ margin: 0 }}>
+          Items
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          <input
+            className={inputCls}
+            placeholder="Filter SKU, name…"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            aria-label="Filter items"
+          />
+          <select
+            className="staff-select"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
+            aria-label="Filter by type"
+          >
+            <option value="all">All types</option>
+            <option value="spare">Spares</option>
+            <option value="tool">Tools</option>
+          </select>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="text-left text-slate-500 border-b border-slate-200">
+            <tr className="text-left border-b">
               <th className="py-2 pr-4">SKU</th>
               <th className="py-2 pr-4">Name</th>
               <th className="py-2 pr-4">Category</th>
@@ -140,27 +178,27 @@ function ItemsSection({
             </tr>
           </thead>
           <tbody>
-            {items.map((i) => (
-              <tr key={i.id} className="border-b border-slate-100">
-                <td className="py-2 pr-4 font-mono text-xs text-slate-700">{i.sku}</td>
-                <td className="py-2 pr-4 font-medium text-slate-800">{i.name}</td>
-                <td className="py-2 pr-4 text-slate-600">{i.category ?? "—"}</td>
-                <td className="py-2 pr-4 text-slate-600">{i.unit ?? "—"}</td>
-                <td className="py-2 pr-4 text-right text-slate-700">
+            {filtered.map((i) => (
+              <tr key={i.id} className="">
+                <td className="py-2 pr-4 font-mono text-xs">{i.sku}</td>
+                <td className="py-2 pr-4 font-medium">{i.name}</td>
+                <td className="py-2 pr-4 text-[var(--muted)]">{i.category ?? "—"}</td>
+                <td className="py-2 pr-4 text-[var(--muted)]">{i.unit ?? "—"}</td>
+                <td className="py-2 pr-4 text-right text-[var(--text)]">
                   ₹{i.price.toLocaleString()}
                 </td>
-                <td className="py-2 pr-4 text-right text-slate-700">{i.reorder_level}</td>
-                <td className="py-2 text-xs text-slate-500">
+                <td className="py-2 pr-4 text-right text-[var(--text)]">{i.reorder_level}</td>
+                <td className="py-2 text-xs text-[var(--dim)]">
                   {[i.is_spare && "spare", i.is_tool && "tool"]
                     .filter(Boolean)
                     .join(", ") || "—"}
                 </td>
               </tr>
             ))}
-            {items.length === 0 && (
+            {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-4 text-center text-slate-400">
-                  No items yet.
+                <td colSpan={7} className="py-4 text-center text-[var(--dim)]">
+                  {items.length === 0 ? "No items yet." : "No items match the filter."}
                 </td>
               </tr>
             )}
@@ -170,7 +208,7 @@ function ItemsSection({
 
       {canWrite && (
         <form
-          className="grid gap-2 sm:grid-cols-7 pt-2 border-t border-slate-200"
+          className="grid gap-2 sm:grid-cols-7 pt-2 border-t"
           onSubmit={async (e) => {
             e.preventDefault();
             await onCreate({
@@ -201,12 +239,12 @@ function ItemsSection({
             className={inputCls}
             onChange={(e) => setForm({ ...form, reorder_level: e.target.value })} />
           <div className="flex items-center gap-2">
-            <label className="flex items-center gap-1 text-xs text-slate-600">
+            <label className="flex items-center gap-1 text-xs text-[var(--muted)]">
               <input type="checkbox" checked={flags.is_spare}
                 onChange={(e) => setFlags({ ...flags, is_spare: e.target.checked })} />
               spare
             </label>
-            <label className="flex items-center gap-1 text-xs text-slate-600">
+            <label className="flex items-center gap-1 text-xs text-[var(--muted)]">
               <input type="checkbox" checked={flags.is_tool}
                 onChange={(e) => setFlags({ ...flags, is_tool: e.target.checked })} />
               tool
@@ -258,12 +296,12 @@ function StockSection({
   });
 
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-4">
-      <h2 className="text-lg font-semibold text-slate-800">Stock levels</h2>
+    <section className="staff-card space-y-4">
+      <h2 className="staff-card-title">Stock levels</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="text-left text-slate-500 border-b border-slate-200">
+            <tr className="text-left border-b">
               <th className="py-2 pr-4">SKU</th>
               <th className="py-2 pr-4">Item</th>
               <th className="py-2 pr-4">Warehouse</th>
@@ -273,16 +311,16 @@ function StockSection({
           </thead>
           <tbody>
             {stock.map((s) => (
-              <tr key={`${s.item_id}:${s.warehouse_id}`} className="border-b border-slate-100">
-                <td className="py-2 pr-4 font-mono text-xs text-slate-700">{s.sku}</td>
-                <td className="py-2 pr-4 text-slate-800">{s.item_name}</td>
-                <td className="py-2 pr-4 text-slate-600">{s.warehouse_name}</td>
-                <td className="py-2 pr-4 text-right font-medium text-slate-800">
+              <tr key={`${s.item_id}:${s.warehouse_id}`} className="">
+                <td className="py-2 pr-4 font-mono text-xs">{s.sku}</td>
+                <td className="py-2 pr-4 text-[var(--text)]">{s.item_name}</td>
+                <td className="py-2 pr-4 text-[var(--muted)]">{s.warehouse_name}</td>
+                <td className="py-2 pr-4 text-right font-medium">
                   {s.quantity}
                 </td>
                 <td className="py-2">
                   {s.below_reorder && (
-                    <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                    <span className="staff-badge staff-badge-warn">
                       low stock
                     </span>
                   )}
@@ -291,7 +329,7 @@ function StockSection({
             ))}
             {stock.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-4 text-center text-slate-400">
+                <td colSpan={5} className="py-4 text-center text-[var(--dim)]">
                   No stock recorded yet.
                 </td>
               </tr>
@@ -301,7 +339,7 @@ function StockSection({
       </div>
 
       {canWrite && (
-        <div className="grid gap-4 lg:grid-cols-2 pt-2 border-t border-slate-200">
+        <div className="grid gap-4 lg:grid-cols-2 pt-2 border-t">
           <form
             className="space-y-2"
             onSubmit={async (e) => {
@@ -315,23 +353,23 @@ function StockSection({
               setAdjust({ ...adjust, quantity: "" });
             }}
           >
-            <h3 className="text-sm font-semibold text-slate-700">Adjust stock</h3>
+            <h3 className="text-sm font-semibold text-[var(--text)]">Adjust stock</h3>
             <div className="flex flex-wrap gap-2">
-              <select required value={adjust.item_id} className={`${inputCls} bg-white`}
+              <select required value={adjust.item_id} className={`${inputCls} staff-select`}
                 onChange={(e) => setAdjust({ ...adjust, item_id: e.target.value })}>
                 <option value="">Item…</option>
                 {items.map((i) => (
                   <option key={i.id} value={i.id}>{i.sku} — {i.name}</option>
                 ))}
               </select>
-              <select required value={adjust.warehouse_id} className={`${inputCls} bg-white`}
+              <select required value={adjust.warehouse_id} className={`${inputCls} staff-select`}
                 onChange={(e) => setAdjust({ ...adjust, warehouse_id: e.target.value })}>
                 <option value="">Warehouse…</option>
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>{w.name}</option>
                 ))}
               </select>
-              <select value={adjust.move_type} className={`${inputCls} bg-white`}
+              <select value={adjust.move_type} className={`${inputCls} staff-select`}
                 onChange={(e) =>
                   setAdjust({ ...adjust, move_type: e.target.value as "in" | "out" })
                 }>
@@ -358,16 +396,16 @@ function StockSection({
               setTransfer({ ...transfer, quantity: "" });
             }}
           >
-            <h3 className="text-sm font-semibold text-slate-700">Transfer between warehouses</h3>
+            <h3 className="text-sm font-semibold text-[var(--text)]">Transfer between warehouses</h3>
             <div className="flex flex-wrap gap-2">
-              <select required value={transfer.item_id} className={`${inputCls} bg-white`}
+              <select required value={transfer.item_id} className={`${inputCls} staff-select`}
                 onChange={(e) => setTransfer({ ...transfer, item_id: e.target.value })}>
                 <option value="">Item…</option>
                 {items.map((i) => (
                   <option key={i.id} value={i.id}>{i.sku} — {i.name}</option>
                 ))}
               </select>
-              <select required value={transfer.from_warehouse_id} className={`${inputCls} bg-white`}
+              <select required value={transfer.from_warehouse_id} className={`${inputCls} staff-select`}
                 onChange={(e) =>
                   setTransfer({ ...transfer, from_warehouse_id: e.target.value })
                 }>
@@ -376,7 +414,7 @@ function StockSection({
                   <option key={w.id} value={w.id}>{w.name}</option>
                 ))}
               </select>
-              <select required value={transfer.to_warehouse_id} className={`${inputCls} bg-white`}
+              <select required value={transfer.to_warehouse_id} className={`${inputCls} staff-select`}
                 onChange={(e) =>
                   setTransfer({ ...transfer, to_warehouse_id: e.target.value })
                 }>
@@ -409,22 +447,22 @@ function WarehousesSection({
   const [form, setForm] = useState({ name: "", location: "" });
 
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-4">
-      <h2 className="text-lg font-semibold text-slate-800">Warehouses</h2>
-      <ul className="text-sm text-slate-700 space-y-1">
+    <section className="staff-card space-y-4">
+      <h2 className="staff-card-title">Warehouses</h2>
+      <ul className="text-sm text-[var(--text)] space-y-1">
         {warehouses.map((w) => (
           <li key={w.id}>
             <span className="font-medium">{w.name}</span>
-            {w.location && <span className="text-slate-500"> — {w.location}</span>}
+            {w.location && <span className="text-[var(--dim)]"> — {w.location}</span>}
           </li>
         ))}
         {warehouses.length === 0 && (
-          <li className="text-slate-400">No warehouses yet.</li>
+          <li className="text-[var(--dim)]">No warehouses yet.</li>
         )}
       </ul>
       {canWrite && (
         <form
-          className="flex flex-wrap gap-2 pt-2 border-t border-slate-200"
+          className="flex flex-wrap gap-2 pt-2 border-t"
           onSubmit={async (e) => {
             e.preventDefault();
             await onCreate({ name: form.name, location: form.location || undefined });
@@ -444,12 +482,12 @@ function WarehousesSection({
 
 function MovesSection({ moves }: { moves: StockMove[] }) {
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-4">
-      <h2 className="text-lg font-semibold text-slate-800">Recent stock moves</h2>
+    <section className="staff-card space-y-4">
+      <h2 className="staff-card-title">Recent stock moves</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="text-left text-slate-500 border-b border-slate-200">
+            <tr className="text-left border-b">
               <th className="py-2 pr-4">When</th>
               <th className="py-2 pr-4">Item</th>
               <th className="py-2 pr-4">Warehouse</th>
@@ -460,29 +498,29 @@ function MovesSection({ moves }: { moves: StockMove[] }) {
           </thead>
           <tbody>
             {moves.map((m) => (
-              <tr key={m.id} className="border-b border-slate-100">
-                <td className="py-2 pr-4 text-slate-500 whitespace-nowrap">
+              <tr key={m.id} className="">
+                <td className="py-2 pr-4 text-[var(--dim)] whitespace-nowrap">
                   {new Date(m.created_at).toLocaleString()}
                 </td>
-                <td className="py-2 pr-4 text-slate-800">
-                  <span className="font-mono text-xs text-slate-500">{m.sku}</span>{" "}
+                <td className="py-2 pr-4 text-[var(--text)]">
+                  <span className="font-mono text-xs text-[var(--dim)]">{m.sku}</span>{" "}
                   {m.item_name}
                 </td>
-                <td className="py-2 pr-4 text-slate-600">{m.warehouse_name}</td>
-                <td className="py-2 pr-4 text-slate-600">{m.move_type}</td>
+                <td className="py-2 pr-4 text-[var(--muted)]">{m.warehouse_name}</td>
+                <td className="py-2 pr-4 text-[var(--muted)]">{m.move_type}</td>
                 <td
                   className={`py-2 pr-4 text-right font-medium ${
-                    m.quantity < 0 ? "text-red-600" : "text-green-700"
+                    m.quantity < 0 ? "text-[var(--danger)]" : "text-[var(--ok)]"
                   }`}
                 >
                   {m.quantity > 0 ? `+${m.quantity}` : m.quantity}
                 </td>
-                <td className="py-2 text-slate-600">{m.created_by_name}</td>
+                <td className="py-2 text-[var(--muted)]">{m.created_by_name}</td>
               </tr>
             ))}
             {moves.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-4 text-center text-slate-400">
+                <td colSpan={6} className="py-4 text-center text-[var(--dim)]">
                   No stock movements yet.
                 </td>
               </tr>

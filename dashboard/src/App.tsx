@@ -8,8 +8,16 @@ import ServicePage from "./ServicePage";
 import TallyPage from "./TallyPage";
 import UsersPanel from "./UsersPanel";
 import WebsitePage from "./WebsitePage";
+import ImportsPage from "./ImportsPage";
+import ProjectsPage from "./ProjectsPage";
+import { Badge, Button, ToastProvider } from "./ui";
+import CommandPalette, { CommandItem } from "./ui/CommandPalette";
 
 const TOKEN_KEY = "clawsw_token";
+/** Public marketing site (gateway serves it at /). */
+const PUBLIC_SITE =
+  (import.meta.env.VITE_PUBLIC_SITE_URL as string | undefined) || "/";
+
 type Tab =
   | "dashboard"
   | "overview"
@@ -17,21 +25,84 @@ type Tab =
   | "service"
   | "invoicing"
   | "website"
+  | "imports"
+  | "projects"
   | "users"
   | "audit";
 
+const TAB_LABELS: Record<Tab, string> = {
+  dashboard: "Dashboard",
+  overview: "Overview",
+  inventory: "Inventory",
+  service: "Service",
+  invoicing: "Invoicing",
+  website: "Website orders",
+  imports: "Imports",
+  projects: "Projects",
+  users: "Users",
+  audit: "Audit",
+};
+
+function tabLabel(tab: Tab, role: string) {
+  if (tab === "dashboard" && role === "owner") return "CEO Dashboard";
+  return TAB_LABELS[tab];
+}
+
+/** One-time handoff from the website login when origins differ (split dev). */
+function consumeHashToken(): string | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.location.hash.replace(/^#/, "");
+  if (!raw) return null;
+  const params = new URLSearchParams(raw.includes("=") ? raw : `token=${raw}`);
+  const fromKey = params.get("clawsw_token") || params.get("token");
+  if (!fromKey) return null;
+  try {
+    localStorage.setItem(TOKEN_KEY, fromKey);
+  } catch {
+    /* ignore quota / private mode */
+  }
+  const path = window.location.pathname + window.location.search;
+  window.history.replaceState(null, "", path);
+  return fromKey;
+}
+
+function initialToken(): string | null {
+  const handed = consumeHashToken();
+  if (handed) return handed;
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function canPerm(me: Me, resource: string, action: string) {
+  return me.permissions.some((p) => p.resource === resource && p.action === action);
+}
+
 export default function App() {
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem(TOKEN_KEY),
-  );
+  const [token, setToken] = useState<string | null>(() => initialToken());
   const [me, setMe] = useState<Me | null>(null);
   const [loading, setLoading] = useState(Boolean(token));
   const [tab, setTab] = useState<Tab>("overview");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setMe(null);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCmdOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   useEffect(() => {
@@ -65,132 +136,217 @@ export default function App() {
 
   if (!token) {
     return (
-      <Login
-        onToken={(t) => {
-          localStorage.setItem(TOKEN_KEY, t);
-          setToken(t);
-        }}
-      />
+      <ToastProvider>
+        <Login
+          onToken={(t) => {
+            localStorage.setItem(TOKEN_KEY, t);
+            setToken(t);
+          }}
+        />
+      </ToastProvider>
     );
   }
 
   if (loading || !me) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100 text-slate-500">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ color: "var(--muted)" }}
+      >
         Loading…
       </div>
     );
   }
 
-  const can = (resource: string, action: string) =>
-    me.permissions.some((p) => p.resource === resource && p.action === action);
+  const can = (resource: string, action: string) => canPerm(me, resource, action);
+
+  const navItems = (
+    [
+      ["dashboard", "Dashboard", can("reports", "read")],
+      ["overview", "Overview", true],
+      ["inventory", "Inventory", can("inventory", "read")],
+      ["service", "Service", can("service_jobs", "read")],
+      ["imports", "Imports", can("imports", "read")],
+      ["projects", "Projects", can("projects", "read")],
+      ["invoicing", "Invoicing", can("invoices", "read")],
+      ["website", "Website", can("website", "read")],
+      ["users", "Users", can("admin", "read")],
+      ["audit", "Audit", can("admin", "read")],
+    ] as [Tab, string, boolean][]
+  ).filter(([, , visible]) => visible);
+
+  const go = (key: Tab) => {
+    setTab(key);
+    setSidebarOpen(false);
+  };
+
+  const commands: CommandItem[] = navItems.map(([key, label]) => ({
+    id: key,
+    label,
+    hint: "Go to",
+    run: () => go(key),
+  }));
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="bg-white shadow-sm">
-        <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
-          <div className="flex items-baseline gap-3">
-            <span className="text-xl font-bold text-slate-800">clawSW</span>
-            <span className="text-sm text-slate-500">internal dashboard</span>
+    <ToastProvider>
+    <div className="staff-shell">
+      <CommandPalette
+        open={cmdOpen}
+        onClose={() => setCmdOpen(false)}
+        items={commands}
+      />
+      {sidebarOpen && (
+        <div
+          className="staff-sidebar-backdrop"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      <aside
+        className={`staff-sidebar ${sidebarOpen ? "is-open" : ""}`}
+        aria-label="Staff navigation"
+      >
+        <div className="staff-sidebar-brand">
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              background:
+                "linear-gradient(140deg, rgba(224,164,90,0.35), rgba(224,164,90,0.08))",
+              border: "1px solid rgba(224,164,90,0.35)",
+              display: "grid",
+              placeItems: "center",
+              color: "var(--wood)",
+              fontWeight: 800,
+              fontSize: "0.85rem",
+              flexShrink: 0,
+            }}
+          >
+            SW
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-600">
-              {me.name}{" "}
-              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                {me.role}
-              </span>
-            </span>
+          <div>
+            <strong>Sanjay Wood Tech</strong>
+            <span>Staff</span>
+          </div>
+        </div>
+
+        <nav className="staff-nav">
+          {navItems.map(([key, label]) => (
             <button
-              onClick={logout}
-              className="text-sm text-slate-500 hover:text-slate-800"
+              key={key}
+              type="button"
+              onClick={() => go(key)}
+              className={`staff-nav-btn ${tab === key ? "is-active" : ""}`}
             >
-              Sign out
+              {key === "dashboard" && me.role === "owner" ? "CEO Dashboard" : label}
             </button>
+          ))}
+        </nav>
+
+        <div className="staff-sidebar-foot">
+          <a
+            href={PUBLIC_SITE}
+            className="staff-btn staff-btn-ghost"
+            style={{ justifyContent: "flex-start", textDecoration: "none" }}
+          >
+            ← Public site
+          </a>
+        </div>
+      </aside>
+
+      <div className="staff-main-col">
+        <header className="staff-topbar">
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button
+              type="button"
+              className="staff-mobile-toggle"
+              aria-label="Open menu"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              </svg>
+            </button>
+            <div className="staff-topbar-title">{tabLabel(tab, me.role)}</div>
           </div>
-        </div>
-      </header>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <Button
+              variant="ghost"
+              onClick={() => setCmdOpen(true)}
+              style={{ padding: "6px 10px", fontSize: "0.8rem", color: "var(--dim)" }}
+              title="Command palette (Ctrl+K)"
+            >
+              ⌘K
+            </Button>
+            <span style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
+              {me.name}
+            </span>
+            <Badge tone="wood">{me.role}</Badge>
+            <Button variant="ghost" onClick={logout} style={{ padding: "6px 10px" }}>
+              Sign out
+            </Button>
+          </div>
+        </header>
 
-      <nav className="mx-auto max-w-5xl px-4 pt-4">
-        <div className="flex gap-1">
-          {(
-            [
-              ["dashboard", "Dashboard", can("reports", "read")],
-              ["overview", "Overview", true],
-              ["inventory", "Inventory", can("inventory", "read")],
-              ["service", "Service", can("service_jobs", "read")],
-              ["invoicing", "Invoicing", can("invoices", "read")],
-              ["website", "Website", can("website", "read")],
-              ["users", "Users", can("admin", "read")],
-              ["audit", "Audit", can("admin", "read")],
-            ] as [Tab, string, boolean][]
-          )
-            .filter(([, , visible]) => visible)
-            .map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setTab(key)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                  tab === key
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-        </div>
-      </nav>
+        <main className="staff-content space-y-6">
+          {tab === "dashboard" && can("reports", "read") && (
+            <DashboardPage token={token} role={me.role} onNavigate={go} />
+          )}
 
-      <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
-        {tab === "dashboard" && can("reports", "read") && (
-          <DashboardPage token={token} />
-        )}
+          {tab === "overview" && (
+            <section className="staff-card">
+              <h2 className="staff-card-title">Your access</h2>
+              <p style={{ fontSize: "0.875rem", color: "var(--muted)", margin: "0 0 12px" }}>
+                Granted by the permissions table for role “{me.role}”.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {me.permissions.map((p) => (
+                  <Badge key={`${p.resource}:${p.action}`} tone="neutral">
+                    {p.resource}:{p.action}
+                  </Badge>
+                ))}
+              </div>
+            </section>
+          )}
 
-        {tab === "overview" && (
-          <section className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold text-slate-800">Your access</h2>
-            <p className="text-sm text-slate-500 mb-3">
-              Granted by the permissions table for role “{me.role}”.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {me.permissions.map((p) => (
-                <span
-                  key={`${p.resource}:${p.action}`}
-                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
-                >
-                  {p.resource}:{p.action}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
+          {tab === "inventory" && can("inventory", "read") && (
+            <InventoryPage token={token} canWrite={can("inventory", "write")} />
+          )}
 
-        {tab === "inventory" && can("inventory", "read") && (
-          <InventoryPage token={token} canWrite={can("inventory", "write")} />
-        )}
+          {tab === "service" && can("service_jobs", "read") && (
+            <ServicePage
+              token={token}
+              canWrite={can("service_jobs", "write")}
+              isTechnician={me.role === "technician"}
+            />
+          )}
 
-        {tab === "service" && can("service_jobs", "read") && (
-          <ServicePage
-            token={token}
-            canWrite={can("service_jobs", "write")}
-            isTechnician={me.role === "technician"}
-          />
-        )}
+          {tab === "invoicing" && can("invoices", "read") && (
+            <TallyPage token={token} canWrite={can("invoices", "write")} />
+          )}
 
-        {tab === "invoicing" && can("invoices", "read") && (
-          <TallyPage token={token} canWrite={can("invoices", "write")} />
-        )}
+          {tab === "website" && can("website", "read") && (
+            <WebsitePage token={token} canWrite={can("website", "write")} />
+          )}
 
-        {tab === "website" && can("website", "read") && (
-          <WebsitePage token={token} canWrite={can("website", "write")} />
-        )}
+          {tab === "imports" && can("imports", "read") && (
+            <ImportsPage token={token} canWrite={can("imports", "write")} />
+          )}
 
-        {tab === "users" && can("admin", "read") && (
-          <UsersPanel token={token} canWrite={can("admin", "write")} selfId={me.id} />
-        )}
+          {tab === "projects" && can("projects", "read") && (
+            <ProjectsPage token={token} canWrite={can("projects", "write")} />
+          )}
 
-        {tab === "audit" && can("admin", "read") && <AuditPage token={token} />}
-      </main>
+          {tab === "users" && can("admin", "read") && (
+            <UsersPanel token={token} canWrite={can("admin", "write")} selfId={me.id} />
+          )}
+
+          {tab === "audit" && can("admin", "read") && <AuditPage token={token} />}
+        </main>
+      </div>
     </div>
+    </ToastProvider>
   );
 }

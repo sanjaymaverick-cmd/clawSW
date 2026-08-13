@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, Warehouse, WebsiteOrder } from "./api";
+import { Badge, Button, Card, Pipeline, useToast } from "./ui";
 
-const buttonCls =
-  "rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50";
-const selectCls =
-  "rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm";
-
-const STATUS_BADGE: Record<WebsiteOrder["status"], string> = {
-  pending: "bg-amber-50 text-amber-700",
-  confirmed: "bg-green-50 text-green-700",
-  synced_to_tally: "bg-blue-50 text-blue-700",
+const STATUS_TONE: Record<
+  WebsiteOrder["status"],
+  "warn" | "ok" | "info"
+> = {
+  pending: "warn",
+  confirmed: "ok",
+  synced_to_tally: "info",
 };
 
 /**
@@ -34,13 +33,12 @@ export default function WebsitePage({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const toast = useToast();
 
   const refresh = useCallback(async () => {
     try {
       const [o, w] = await Promise.all([
         api.listWebsiteOrders(token, filter === "pending" ? "pending" : undefined),
-        // Warehouse list drives the confirm dropdown; only writers need it,
-        // but reading it is harmless (inventory:read covers these roles too).
         canWrite ? api.listWarehouses(token) : Promise.resolve([]),
       ]);
       setOrders(o);
@@ -66,9 +64,13 @@ export default function WebsitePage({
     setError(null);
     try {
       await api.confirmWebsiteOrder(token, order.id, warehouseId);
-      setNotice(`Order for ${order.customer_name} confirmed — stock deducted.`);
+      const msg = `Order for ${order.customer_name} confirmed — stock deducted.`;
+      setNotice(msg);
+      toast.success(msg);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Confirmation failed");
+      const msg = err instanceof ApiError ? err.message : "Confirmation failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setBusyId(null);
       await refresh();
@@ -77,135 +79,151 @@ export default function WebsitePage({
 
   return (
     <div className="space-y-6">
-      {error && (
-        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
-      )}
-      {notice && (
-        <p className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">
-          {notice}
-        </p>
-      )}
+      {error && <p className="staff-alert staff-alert-error">{error}</p>}
+      {notice && <p className="staff-alert staff-alert-ok">{notice}</p>}
 
-      <section className="bg-white rounded-xl shadow p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-800">Website orders</h2>
-            <p className="text-sm text-slate-500">
-              {canWrite
-                ? "Confirm a pending order to deduct stock and queue it for Tally."
-                : "Incoming website orders (read-only for your role)."}
-            </p>
-          </div>
+      <Card
+        title="Website orders"
+        action={
           <select
             value={filter}
-            className={selectCls}
+            className="staff-select"
             onChange={(e) => setFilter(e.target.value as "pending" | "all")}
           >
             <option value="pending">Pending only</option>
             <option value="all">All statuses</option>
           </select>
-        </div>
+        }
+      >
+        <p style={{ fontSize: "0.875rem", color: "var(--muted)", margin: "0 0 16px" }}>
+          {canWrite
+            ? "Confirm a pending order to deduct stock and queue it for Tally."
+            : "Incoming website orders (read-only for your role)."}
+        </p>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="text-left text-slate-500 border-b border-slate-200">
-                <th className="py-2 pr-4">Placed</th>
-                <th className="py-2 pr-4">Customer</th>
-                <th className="py-2 pr-4">Contact</th>
-                <th className="py-2 pr-4">Items</th>
-                <th className="py-2 pr-4 text-right">Total</th>
-                <th className="py-2 pr-4">Status</th>
-                {canWrite && <th className="py-2">Confirm</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((o) => (
-                <tr key={o.id} className="border-b border-slate-100 align-top">
-                  <td className="py-2 pr-4 text-slate-500 whitespace-nowrap">
-                    {new Date(o.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="py-2 pr-4 font-medium text-slate-800">
-                    {o.customer_name}
-                  </td>
-                  <td className="py-2 pr-4 text-slate-600">
-                    <div>{o.email}</div>
-                    {o.phone && <div className="text-xs text-slate-400">{o.phone}</div>}
-                  </td>
-                  <td className="py-2 pr-4 text-slate-600">
-                    <ul className="space-y-0.5">
-                      {o.items.map((i) => (
-                        <li key={i.id}>
-                          {i.quantity}×{" "}
-                          <span className="font-mono text-xs text-slate-500">
-                            {i.sku}
-                          </span>{" "}
-                          {i.item_name}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td className="py-2 pr-4 text-right font-medium text-slate-800 whitespace-nowrap">
-                    ₹{o.total.toLocaleString()}
-                  </td>
-                  <td className="py-2 pr-4">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[o.status]}`}
-                    >
-                      {o.status.replace(/_/g, " ")}
-                    </span>
-                  </td>
-                  {canWrite && (
-                    <td className="py-2">
-                      {o.status === "pending" ? (
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={chosen[o.id] ?? ""}
-                            className={selectCls}
-                            onChange={(e) =>
-                              setChosen({ ...chosen, [o.id]: e.target.value })
-                            }
-                          >
-                            <option value="">
-                              {warehouses[0] ? warehouses[0].name : "No warehouse"}
-                            </option>
-                            {warehouses.map((w) => (
-                              <option key={w.id} value={w.id}>
-                                {w.name}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            onClick={() => void confirm(o)}
-                            disabled={busyId === o.id || warehouses.length === 0}
-                            className={buttonCls}
-                          >
-                            Confirm
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-400">—</span>
-                      )}
-                    </td>
-                  )}
-                </tr>
-              ))}
-              {orders.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={canWrite ? 7 : 6}
-                    className="py-4 text-center text-slate-400"
+        <div className="space-y-4">
+          {orders.map((o) => (
+            <article
+              key={o.id}
+              className="staff-card"
+              style={{
+                background: "var(--bg-2)",
+                boxShadow: "none",
+                padding: 16,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  marginBottom: 12,
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      color: "var(--text)",
+                      fontSize: "0.95rem",
+                    }}
                   >
-                    {filter === "pending"
-                      ? "No pending orders."
-                      : "No website orders yet."}
-                  </td>
-                </tr>
+                    {o.customer_name}
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--dim)", marginTop: 2 }}>
+                    {new Date(o.created_at).toLocaleString()} · {o.email}
+                    {o.phone ? ` · ${o.phone}` : ""}
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Badge tone={STATUS_TONE[o.status]}>
+                    {o.status.replace(/_/g, " ")}
+                  </Badge>
+                  <span style={{ fontWeight: 700, color: "var(--text)" }}>
+                    ₹{o.total.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <Pipeline status={o.status} />
+              </div>
+
+              <ul
+                style={{
+                  margin: "0 0 12px",
+                  padding: 0,
+                  listStyle: "none",
+                  fontSize: "0.875rem",
+                  color: "var(--muted)",
+                }}
+              >
+                {o.items.map((i) => (
+                  <li key={i.id} style={{ padding: "2px 0" }}>
+                    {i.quantity}×{" "}
+                    <span
+                      style={{
+                        fontFamily: "ui-monospace, monospace",
+                        fontSize: "0.75rem",
+                        color: "var(--dim)",
+                      }}
+                    >
+                      {i.sku}
+                    </span>{" "}
+                    {i.item_name}
+                  </li>
+                ))}
+              </ul>
+
+              {canWrite && o.status === "pending" && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <select
+                    value={chosen[o.id] ?? ""}
+                    className="staff-select"
+                    onChange={(e) =>
+                      setChosen({ ...chosen, [o.id]: e.target.value })
+                    }
+                  >
+                    <option value="">
+                      {warehouses[0] ? warehouses[0].name : "No warehouse"}
+                    </option>
+                    {warehouses.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="primary"
+                    onClick={() => void confirm(o)}
+                    disabled={busyId === o.id || warehouses.length === 0}
+                  >
+                    {busyId === o.id ? "Confirming…" : "Confirm order"}
+                  </Button>
+                </div>
               )}
-            </tbody>
-          </table>
+            </article>
+          ))}
+
+          {orders.length === 0 && (
+            <p
+              style={{
+                textAlign: "center",
+                color: "var(--dim)",
+                fontSize: "0.875rem",
+                padding: "24px 0",
+                margin: 0,
+              }}
+            >
+              {filter === "pending"
+                ? "No pending orders."
+                : "No website orders yet."}
+            </p>
+          )}
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

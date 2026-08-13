@@ -3,15 +3,6 @@
 import { useState } from "react";
 import { BROWSER_API_URL, Machinery } from "../../lib/api";
 
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  boxSizing: "border-box",
-  padding: "0.5rem 0.75rem",
-  border: "1px solid #cbd5e1",
-  borderRadius: 8,
-  fontSize: "0.9375rem",
-};
-
 export default function BookingForm({ machines }: { machines: Machinery[] }) {
   const [customerName, setCustomerName] = useState("");
   const [email, setEmail] = useState("");
@@ -62,19 +53,16 @@ export default function BookingForm({ machines }: { machines: Machinery[] }) {
   return (
     <form
       onSubmit={submit}
-      style={{
-        background: "#ffffff",
-        border: "1px solid #e2e8f0",
-        borderRadius: 12,
-        padding: "1.5rem",
-        display: "grid",
-        gap: "0.75rem",
-      }}
+      className="card"
+      style={{ display: "grid", gap: 16, padding: 28 }}
     >
-      <label style={{ fontSize: "0.875rem", fontWeight: 600 }}>
-        Machine
+      <div className="field">
+        <label className="label" htmlFor="bf-machine">
+          Machine
+        </label>
         <select
-          style={{ ...inputStyle, marginTop: "0.25rem" }}
+          id="bf-machine"
+          className="select"
           value={machineryId}
           onChange={(e) => setMachineryId(e.target.value)}
           required
@@ -86,63 +74,80 @@ export default function BookingForm({ machines }: { machines: Machinery[] }) {
             </option>
           ))}
         </select>
-      </label>
-      <label style={{ fontSize: "0.875rem", fontWeight: 600 }}>
-        Preferred date
+      </div>
+
+      <div className="field">
+        <label className="label" htmlFor="bf-date">
+          Preferred date
+        </label>
         <input
-          style={{ ...inputStyle, marginTop: "0.25rem" }}
+          id="bf-date"
+          className="input"
           type="date"
           value={preferredDate}
           onChange={(e) => setPreferredDate(e.target.value)}
         />
-      </label>
-      <input
-        style={inputStyle}
-        placeholder="Your name"
-        value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
-        required
-      />
-      <input
-        style={inputStyle}
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        style={inputStyle}
-        placeholder="Phone (optional)"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
+      </div>
+
+      <div className="field">
+        <label className="label" htmlFor="bf-name">
+          Your name
+        </label>
+        <input
+          id="bf-name"
+          className="input"
+          placeholder="Full name"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="field">
+        <label className="label" htmlFor="bf-email">
+          Email
+        </label>
+        <input
+          id="bf-email"
+          className="input"
+          type="email"
+          placeholder="you@company.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="field">
+        <label className="label" htmlFor="bf-phone">
+          Phone <span className="dim">(optional)</span>
+        </label>
+        <input
+          id="bf-phone"
+          className="input"
+          placeholder="Phone number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+      </div>
+
       <button
         type="submit"
+        className="btn btn-primary"
         disabled={submitting}
-        style={{
-          background: "#0f172a",
-          color: "#ffffff",
-          border: "none",
-          borderRadius: 8,
-          padding: "0.625rem 1rem",
-          fontSize: "0.9375rem",
-          cursor: "pointer",
-          opacity: submitting ? 0.6 : 1,
-        }}
+        style={{ opacity: submitting ? 0.6 : 1, width: "100%" }}
       >
         {submitting ? "Submitting…" : "Request demo"}
       </button>
+
       {result?.kind === "ok" && (
-        <p style={{ margin: 0, color: "#15803d", fontSize: "0.875rem" }}>
-          Booking received! Reference: {result.id}. We will contact you to
+        <p style={{ color: "#4ade80", fontSize: "0.9rem" }}>
+          Booking received! Reference: {result.id}. We&apos;ll contact you to
           confirm.
         </p>
       )}
       {result?.kind === "error" && (
-        <p style={{ margin: 0, color: "#b91c1c", fontSize: "0.875rem" }}>
-          {result.message}
-        </p>
+        <p style={{ color: "#fb7185", fontSize: "0.9rem" }}>{result.message}</p>
       )}
     </form>
   );

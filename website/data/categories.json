@@ -1,0 +1,466 @@
+[
+  {
+    "slug": "panel-processing-machinery",
+    "name": "Panel Processing Machinery",
+    "path_prefix": "product-category/panel-processing-machinery",
+    "description": "Beam saws, edge banding, CNC drilling and nesting machines for panel and modular furniture factories.",
+    "count": 50,
+    "subcategories": [
+      {
+        "slug": "panel-processing-machinery--auto-spray-booth",
+        "name": "Auto Spray Booth",
+        "path": "product-category/panel-processing-machinery/auto-spray-booth",
+        "count": 1
+      },
+      {
+        "slug": "panel-processing-machinery--beam-saw",
+        "name": "Beam Saw",
+        "path": "product-category/panel-processing-machinery/beam-saw",
+        "count": 3
+      },
+      {
+        "slug": "panel-processing-machinery--cnc-door-lock-hinge-machine",
+        "name": "CNC Door Lock & Hinge Machine",
+        "path": "product-category/panel-processing-machinery/cnc-door-lock-hinge-machine",
+        "count": 1
+      },
+      {
+        "slug": "panel-processing-machinery--cnc-router",
+        "name": "CNC Router",
+        "path": "product-category/panel-processing-machinery/cnc-router",
+        "count": 2
+      },
+      {
+        "slug": "panel-processing-machinery--co2-laser",
+        "name": "CO2 Laser",
+        "path": "product-category/panel-processing-machinery/co2-laser",
+        "count": 3
+      },
+      {
+        "slug": "panel-processing-machinery--cnc-nesting-machine",
+        "name": "Cnc Nesting Machine",
+        "path": "product-category/panel-processing-machinery/cnc-nesting-machine",
+        "count": 4
+      },
+      {
+        "slug": "panel-processing-machinery--cold-press",
+        "name": "Cold Press",
+        "path": "product-category/panel-processing-machinery/cold-press",
+        "count": 2
+      },
+      {
+        "slug": "panel-processing-machinery--edge-banding",
+        "name": "Edge Banding",
+        "path": "product-category/panel-processing-machinery/edge-banding",
+        "count": 0
+      },
+      {
+        "slug": "panel-processing-machinery--hot-press",
+        "name": "Hot Press",
+        "path": "product-category/panel-processing-machinery/hot-press",
+        "count": 4
+      },
+      {
+        "slug": "panel-processing-machinery--moulder",
+        "name": "Moulder",
+        "path": "product-category/panel-processing-machinery/moulder",
+        "count": 2
+      },
+      {
+        "slug": "panel-processing-machinery--multi-boring",
+        "name": "Multi Boring",
+        "path": "product-category/panel-processing-machinery/multi-boring",
+        "count": 5
+      },
+      {
+        "slug": "panel-processing-machinery--pin-router",
+        "name": "PIN Router",
+        "path": "product-category/panel-processing-machinery/pin-router",
+        "count": 1
+      },
+      {
+        "slug": "panel-processing-machinery--panel-saw",
+        "name": "Panel Saw",
+        "path": "product-category/panel-processing-machinery/panel-saw",
+        "count": 3
+      },
+      {
+        "slug": "panel-processing-machinery--six-side-cnc-drilling",
+        "name": "Six Side Cnc Drilling",
+        "path": "product-category/panel-processing-machinery/six-side-cnc-drilling",
+        "count": 8
+      }
+    ]
+  },
+  {
+    "slug": "solid-wood-machinery",
+    "name": "Solid Woodworking Machinery",
+    "path_prefix": "product-category/solid-wood-machinery",
+    "description": "Rip saws, planers, moulders, tenoners, sanders and CNC machines for solid wood furniture manufacturing.",
+    "count": 73,
+    "subcategories": [
+      {
+        "slug": "solid-wood-machinery--brush-sander",
+        "name": "Brush Sander",
+        "path": "product-category/solid-wood-machinery/brush-sander",
+        "count": 2
+      },
+      {
+        "slug": "solid-wood-machinery--cnc-double-end-tenoner",
+        "name": "CNC Double End Tenoner",
+        "path": "product-category/solid-wood-machinery/cnc-double-end-tenoner",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--cnc-dovetailer",
+        "name": "CNC Dovetailer",
+        "path": "product-category/solid-wood-machinery/cnc-dovetailer",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--cnc-mortiser",
+        "name": "CNC Mortiser",
+        "path": "product-category/solid-wood-machinery/cnc-mortiser",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--cnc-plane-five-axis-machine-axis-center",
+        "name": "CNC Plane Five Axis Machine Axis Center",
+        "path": "product-category/solid-wood-machinery/cnc-plane-five-axis-machine-axis-center",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--cnc-turning-lathe",
+        "name": "CNC Turning Lathe",
+        "path": "product-category/solid-wood-machinery/cnc-turning-lathe",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--cnc-nesting-machine-solid-wood-machinery",
+        "name": "Cnc Nesting Machine",
+        "path": "product-category/solid-wood-machinery/cnc-nesting-machine-solid-wood-machinery",
+        "count": 4
+      },
+      {
+        "slug": "solid-wood-machinery--cnc-shaping-and-milling",
+        "name": "Cnc Shaping And Milling",
+        "path": "product-category/solid-wood-machinery/cnc-shaping-and-milling",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--copy-shaper",
+        "name": "Copy Shaper",
+        "path": "product-category/solid-wood-machinery/copy-shaper",
+        "count": 5
+      },
+      {
+        "slug": "solid-wood-machinery--cut-off-saw",
+        "name": "Cut Off Saw",
+        "path": "product-category/solid-wood-machinery/cut-off-saw",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--double-side-planer",
+        "name": "Double Side Planer",
+        "path": "product-category/solid-wood-machinery/double-side-planer",
+        "count": 4
+      },
+      {
+        "slug": "solid-wood-machinery--dowel-machine",
+        "name": "Dowel Machine",
+        "path": "product-category/solid-wood-machinery/dowel-machine",
+        "count": 2
+      },
+      {
+        "slug": "solid-wood-machinery--edge-brush-sander",
+        "name": "Edge Brush Sander",
+        "path": "product-category/solid-wood-machinery/edge-brush-sander",
+        "count": 2
+      },
+      {
+        "slug": "solid-wood-machinery--finger-jpointing-machine",
+        "name": "Finger Jpointing Machine",
+        "path": "product-category/solid-wood-machinery/finger-jpointing-machine",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--four-side-moulder",
+        "name": "Four Side Moulder",
+        "path": "product-category/solid-wood-machinery/four-side-moulder",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--hf-gluing-press",
+        "name": "Hf Gluing Press",
+        "path": "product-category/solid-wood-machinery/hf-gluing-press",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--horixontal-oscillating-belt-edge",
+        "name": "Horixontal Oscillating Belt Edge",
+        "path": "product-category/solid-wood-machinery/horixontal-oscillating-belt-edge",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--horizontal-band-resaw",
+        "name": "Horizontal Band Resaw",
+        "path": "product-category/solid-wood-machinery/horizontal-band-resaw",
+        "count": 2
+      },
+      {
+        "slug": "solid-wood-machinery--hydraulic-clamp-carrier",
+        "name": "Hydraulic Clamp Carrier",
+        "path": "product-category/solid-wood-machinery/hydraulic-clamp-carrier",
+        "count": 2
+      },
+      {
+        "slug": "solid-wood-machinery--hydraulic-rotary-composer",
+        "name": "Hydraulic Rotary Composer",
+        "path": "product-category/solid-wood-machinery/hydraulic-rotary-composer",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--manual-brush-sander",
+        "name": "Manual Brush Sander",
+        "path": "product-category/solid-wood-machinery/manual-brush-sander",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--oscillation-mortiser",
+        "name": "Oscillation Mortiser",
+        "path": "product-category/solid-wood-machinery/oscillation-mortiser",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--panel-saw-solid-wood-machinery",
+        "name": "Panel Saw",
+        "path": "product-category/solid-wood-machinery/panel-saw-solid-wood-machinery",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--rip-saw",
+        "name": "RIP Saw",
+        "path": "product-category/solid-wood-machinery/rip-saw",
+        "count": 3
+      },
+      {
+        "slug": "solid-wood-machinery--round-end-tenoner",
+        "name": "Round End Tenoner",
+        "path": "product-category/solid-wood-machinery/round-end-tenoner",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--spindle-moulder",
+        "name": "Spindle Moulder",
+        "path": "product-category/solid-wood-machinery/spindle-moulder",
+        "count": 2
+      },
+      {
+        "slug": "solid-wood-machinery--sponge-sander",
+        "name": "Sponge Sander",
+        "path": "product-category/solid-wood-machinery/sponge-sander",
+        "count": 2
+      },
+      {
+        "slug": "solid-wood-machinery--surface-planer",
+        "name": "Surface Planer",
+        "path": "product-category/solid-wood-machinery/surface-planer",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--table-router",
+        "name": "Table Router",
+        "path": "product-category/solid-wood-machinery/table-router",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--vertical-band-saw",
+        "name": "Vertical Band Saw",
+        "path": "product-category/solid-wood-machinery/vertical-band-saw",
+        "count": 1
+      },
+      {
+        "slug": "solid-wood-machinery--wide-belt-sander",
+        "name": "Wide Belt Sander",
+        "path": "product-category/solid-wood-machinery/wide-belt-sander",
+        "count": 6
+      },
+      {
+        "slug": "solid-wood-machinery--wire-brush-snder",
+        "name": "Wire Brush Snder",
+        "path": "product-category/solid-wood-machinery/wire-brush-snder",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "slug": "solid-woodworking-machinery-taiwan",
+    "name": "Solid Woodworking Machinery — Taiwan",
+    "path_prefix": "product-category/solid-woodworking-machinery-taiwan",
+    "description": "Heavy-duty rip saws, planers, moulders and sanders — precision engineered for high-volume production.",
+    "count": 43,
+    "subcategories": [
+      {
+        "slug": "solid-woodworking-machinery-taiwan--automatic-finger-jointing",
+        "name": "Automatic Finger Jointing",
+        "path": "product-category/solid-woodworking-machinery-taiwan/automatic-finger-jointing",
+        "count": 1
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--double-end-tenoner",
+        "name": "Double End Tenoner",
+        "path": "product-category/solid-woodworking-machinery-taiwan/double-end-tenoner",
+        "count": 1
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--double-side-planer-solid-wood-machinery-taiwan",
+        "name": "Double Side Planer",
+        "path": "product-category/solid-woodworking-machinery-taiwan/double-side-planer-solid-wood-machinery-taiwan",
+        "count": 1
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--heavy-duty-wide-belt-sander",
+        "name": "Heavy Duty Wide Belt Sander",
+        "path": "product-category/solid-woodworking-machinery-taiwan/heavy-duty-wide-belt-sander",
+        "count": 8
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--high-frequency-gluing-press",
+        "name": "High Frequency Gluing Press",
+        "path": "product-category/solid-woodworking-machinery-taiwan/high-frequency-gluing-press",
+        "count": 9
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--hydrauli-clamp-carrier",
+        "name": "Hydrauli Clamp Carrier",
+        "path": "product-category/solid-woodworking-machinery-taiwan/hydrauli-clamp-carrier",
+        "count": 2
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--hydraulic-rotary-composer-solid-wood-machinery-taiwan",
+        "name": "Hydraulic Rotary Composer",
+        "path": "product-category/solid-woodworking-machinery-taiwan/hydraulic-rotary-composer-solid-wood-machinery-taiwan",
+        "count": 9
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--multi-rip-saw",
+        "name": "Multi RIP Saw",
+        "path": "product-category/solid-woodworking-machinery-taiwan/multi-rip-saw",
+        "count": 2
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--panel-saw-solid-wood-machinery-taiwan",
+        "name": "Panel Saw",
+        "path": "product-category/solid-woodworking-machinery-taiwan/panel-saw-solid-wood-machinery-taiwan",
+        "count": 3
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--rip-saw-solid-wood-machinery-taiwan",
+        "name": "RIP SAW",
+        "path": "product-category/solid-woodworking-machinery-taiwan/rip-saw-solid-wood-machinery-taiwan",
+        "count": 2
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--round-end-tenoner-oscillation-mortiser",
+        "name": "Round End Tenoner Oscillation Mortiser",
+        "path": "product-category/solid-woodworking-machinery-taiwan/round-end-tenoner-oscillation-mortiser",
+        "count": 2
+      },
+      {
+        "slug": "solid-woodworking-machinery-taiwan--spindle-moulder-solid-wood-machinery-taiwan",
+        "name": "Spindle Moulder",
+        "path": "product-category/solid-woodworking-machinery-taiwan/spindle-moulder-solid-wood-machinery-taiwan",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "slug": "veneer-line-machinery",
+    "name": "Veneer Line Machinery",
+    "path_prefix": "product-category/veneer",
+    "description": "Guillotines, splicers, glue applicators and hot press machines for decorative veneer surface processing.",
+    "count": 14,
+    "subcategories": [
+      {
+        "slug": "veneer-line-machinery--glue-applicator",
+        "name": "Glue Applicator",
+        "path": "product-category/veneer-line-machinery/glue-applicator",
+        "count": 2
+      },
+      {
+        "slug": "veneer-machinery--glue-applicator",
+        "name": "Glue Applicator",
+        "path": "product-category/veneer-machinery/glue-applicator",
+        "count": 2
+      },
+      {
+        "slug": "veneer-line-machinery--hydraulic-hot-press",
+        "name": "Hydraulic Hot Press",
+        "path": "product-category/veneer-line-machinery/hydraulic-hot-press",
+        "count": 4
+      },
+      {
+        "slug": "veneer-machinery--hydraulic-hot-press",
+        "name": "Hydraulic Hot Press",
+        "path": "product-category/veneer-machinery/hydraulic-hot-press",
+        "count": 4
+      },
+      {
+        "slug": "veneer-line-machinery--veneer-guillotine",
+        "name": "Veneer Guillotine",
+        "path": "product-category/veneer-line-machinery/veneer-guillotine",
+        "count": 2
+      },
+      {
+        "slug": "veneer-machinery--veneer-guillotine",
+        "name": "Veneer Guillotine",
+        "path": "product-category/veneer-machinery/veneer-guillotine",
+        "count": 2
+      },
+      {
+        "slug": "veneer-line-machinery--veneer-guillotine-taiwan",
+        "name": "Veneer Guillotine (Taiwan)",
+        "path": "product-category/veneer-line-machinery/veneer-guillotine-taiwan",
+        "count": 3
+      },
+      {
+        "slug": "veneer-machinery--veneer-guillotine-taiwan",
+        "name": "Veneer Guillotine (Taiwan)",
+        "path": "product-category/veneer-machinery/veneer-guillotine-taiwan",
+        "count": 3
+      },
+      {
+        "slug": "veneer-line-machinery--veneer-splicer",
+        "name": "Veneer Splicer",
+        "path": "product-category/veneer-line-machinery/veneer-splicer",
+        "count": 1
+      },
+      {
+        "slug": "veneer-machinery--veneer-splicer",
+        "name": "Veneer Splicer",
+        "path": "product-category/veneer-machinery/veneer-splicer",
+        "count": 1
+      },
+      {
+        "slug": "veneer-line-machinery--veneer-splicer-taiwan",
+        "name": "Veneer Splicer (Taiwan)",
+        "path": "product-category/veneer-line-machinery/veneer-splicer-taiwan",
+        "count": 2
+      },
+      {
+        "slug": "veneer-machinery--veneer-splicer-taiwan",
+        "name": "Veneer Splicer (Taiwan)",
+        "path": "product-category/veneer-machinery/veneer-splicer-taiwan",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "slug": "new-launches",
+    "name": "New Launches",
+    "path_prefix": "product-category/new-launches",
+    "description": "Latest machines added to the catalogue from global manufacturers.",
+    "count": 5,
+    "subcategories": []
+  }
+]
