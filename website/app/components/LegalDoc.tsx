@@ -1,5 +1,35 @@
 import type { ReactNode } from "react";
 import PageIntro from "./PageIntro";
+import { company } from "../../lib/content";
+
+/** Shared registered-entity contact block for the legal pages. */
+export function LegalContact() {
+  return (
+    <>
+      <h2>Contact</h2>
+      <p>
+        {company.legalName ?? company.name}
+        <br />
+        {company.address}
+        <br />
+        <a href={`mailto:${company.emails[0]}`}>{company.emails[0]}</a>
+        {company.phones[0] ? ` · ${company.phones[0]}` : ""}
+        {company.cin ? (
+          <>
+            <br />
+            CIN: {company.cin}
+          </>
+        ) : null}
+        {company.gstin ? (
+          <>
+            <br />
+            GSTIN: {company.gstin}
+          </>
+        ) : null}
+      </p>
+    </>
+  );
+}
 
 export function LegalDoc({
   eyebrow,
