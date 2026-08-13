@@ -112,6 +112,34 @@ export default function ContactPage() {
             </div>
           </div>
         </Reveal>
+
+        {(company.legalName || company.cin || company.gstin) && (
+          <Reveal delay={210}>
+            <div className="card" style={{ height: "100%" }}>
+              <div className="eyebrow" style={{ marginBottom: 12 }}>
+                Registered details
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  fontSize: "0.95rem",
+                  color: "var(--text-muted)",
+                  lineHeight: 1.5,
+                }}
+              >
+                {company.legalName && (
+                  <span style={{ color: "var(--text)", fontWeight: 600 }}>
+                    {company.legalName}
+                  </span>
+                )}
+                {company.cin && <span>CIN: {company.cin}</span>}
+                {company.gstin && <span>GSTIN: {company.gstin}</span>}
+              </div>
+            </div>
+          </Reveal>
+        )}
       </section>
 
       <section

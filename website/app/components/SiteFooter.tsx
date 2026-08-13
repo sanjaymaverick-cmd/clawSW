@@ -66,6 +66,36 @@ export default function SiteFooter() {
                 {company.phones[0]}
               </a>
             </div>
+            <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
+              {company.social?.instagram && (
+                <a
+                  href={company.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Sanjay Wood Tech on Instagram"
+                  className="social-link"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
+              )}
+              {company.social?.facebook && (
+                <a
+                  href={company.social.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Sanjay Wood Tech on Facebook"
+                  className="social-link"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14 9h3l.4-3H14V4.5c0-.9.3-1.5 1.6-1.5H17V.2C16.6.1 15.6 0 14.5 0 12 0 10.3 1.5 10.3 4.3V6H7.5v3h2.8v9H14V9z" />
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
 
           <FooterCol title="Explore" items={explore} />
@@ -79,6 +109,26 @@ export default function SiteFooter() {
           style={{
             display: "flex",
             flexWrap: "wrap",
+            gap: "8px 18px",
+            marginBottom: 16,
+            fontSize: "0.82rem",
+          }}
+        >
+          {[
+            { label: "Privacy Policy", href: "/privacy" },
+            { label: "Terms of Use", href: "/terms" },
+            { label: "Returns & Refunds", href: "/refund-policy" },
+          ].map((l) => (
+            <Link key={l.href} href={l.href} className="muted">
+              {l.label}
+            </Link>
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
             gap: 12,
             justifyContent: "space-between",
             alignItems: "center",
@@ -87,14 +137,47 @@ export default function SiteFooter() {
           }}
         >
           <span>
-            © {new Date().getFullYear()} {company.name}. All rights reserved.
+            © {new Date().getFullYear()} {company.legalName ?? company.name}. All
+            rights reserved.
           </span>
           <span>Jodhpur · Direct import · Pan-India service</span>
         </div>
+
+        {(company.cin || company.gstin) && (
+          <div
+            style={{
+              marginTop: 10,
+              color: "var(--text-dim)",
+              fontSize: "0.76rem",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "4px 16px",
+            }}
+          >
+            {company.cin && <span>CIN: {company.cin}</span>}
+            {company.gstin && <span>GSTIN: {company.gstin}</span>}
+          </div>
+        )}
       </div>
 
       <style>{`
         footer .muted:hover { color: var(--wood); }
+        .social-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          border: 1px solid var(--border-strong);
+          color: var(--text-muted);
+          transition: color 0.2s, border-color 0.2s, background 0.2s;
+        }
+        .social-link:hover {
+          color: var(--wood);
+          border-color: var(--wood);
+          background: var(--surface-2);
+        }
         @media (max-width: 900px) {
           .footer-grid { grid-template-columns: 1fr 1fr !important; }
           .footer-grid > div:first-child { grid-column: 1 / -1; }

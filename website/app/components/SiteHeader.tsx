@@ -5,14 +5,24 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 
+// Primary bar: reads like a machinery company, not a dev demo.
 const links = [
   { href: "/machinery", label: "Machinery" },
-  { href: "/products/beam-saw-bs-2700", label: "3D Explorer" },
-  { href: "/workbench", label: "Workbench" },
-  { href: "/floor-planner", label: "Floor Plan" },
-  { href: "/catalog", label: "Spares" },
   { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
+
+// Buyer destinations + the immersive tools, tucked into the mobile menu
+// (the 3D surfaces also live on each machine page and the bottom dock).
+const exploreLinks = [
+  { href: "/catalog", label: "Spares & Tools" },
+  { href: "/industries", label: "Industries" },
+  { href: "/gallery", label: "Gallery" },
+];
+const workshopLinks = [
+  { href: "/floor-planner", label: "Floor Planner" },
+  { href: "/workbench", label: "Workbench" },
 ];
 
 export default function SiteHeader() {
@@ -86,18 +96,6 @@ export default function SiteHeader() {
             );
           })}
           <Link
-            href="/login"
-            className="nav-link"
-            style={{
-              fontSize: "0.88rem",
-              fontWeight: 500,
-              color: "var(--text-dim)",
-              transition: "color var(--motion-micro) ease-out",
-            }}
-          >
-            Staff
-          </Link>
-          <Link
             href="/book-demo"
             className="btn btn-wood"
             style={{ padding: "11px 20px" }}
@@ -166,7 +164,7 @@ export default function SiteHeader() {
             borderTop: "1px solid var(--border)",
           }}
         >
-          {links.map((l) => (
+          {[...links, ...exploreLinks].map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -181,29 +179,33 @@ export default function SiteHeader() {
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/contact"
+          <div
             style={{
-              padding: "14px 4px",
-              fontSize: "1.05rem",
-              fontWeight: 500,
-              borderBottom: "1px solid var(--border)",
+              padding: "16px 4px 6px",
+              fontSize: "0.72rem",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--text-dim)",
             }}
           >
-            Contact
-          </Link>
-          <Link
-            href="/login"
-            style={{
-              padding: "14px 4px",
-              fontSize: "1.05rem",
-              fontWeight: 500,
-              borderBottom: "1px solid var(--border)",
-              color: "var(--text-muted)",
-            }}
-          >
-            Staff sign-in
-          </Link>
+            Workshop tools
+          </div>
+          {workshopLinks.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              style={{
+                padding: "12px 4px",
+                fontSize: "1rem",
+                fontWeight: 500,
+                color: isActive(l.href) ? "var(--wood)" : "var(--text-muted)",
+                borderBottom: "1px solid var(--border)",
+              }}
+            >
+              {l.label}
+            </Link>
+          ))}
           <Link href="/book-demo" className="btn btn-wood" style={{ marginTop: 14 }}>
             Book a Demo
           </Link>

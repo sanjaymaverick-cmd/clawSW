@@ -19,13 +19,19 @@ const sora = Sora({
   display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sanjaywoodtech.com";
+
+const description =
+  "Precision-engineered woodworking machinery for Indian factories. Panel processing, solid wood, Taiwan range & veneer lines — direct import, expert installation, pan-India service. Jodhpur since 2001.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Sanjay Wood Tech — Woodworking Machinery, Spares & Service",
     template: "%s",
   },
-  description:
-    "Precision-engineered woodworking machinery for Indian factories. Panel processing, solid wood, Taiwan range & veneer lines — direct import, expert installation, pan-India service. Jodhpur since 2001.",
+  description,
+  applicationName: "Sanjay Wood Tech",
   keywords: [
     "woodworking machinery",
     "panel processing",
@@ -36,6 +42,25 @@ export const metadata: Metadata = {
     "Jodhpur",
     "Sanjay Wood Tech",
   ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "Sanjay Wood Tech",
+    title: "Sanjay Wood Tech — Woodworking Machinery, Spares & Service",
+    description,
+    url: siteUrl,
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sanjay Wood Tech — Woodworking Machinery, Spares & Service",
+    description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 export default function RootLayout({

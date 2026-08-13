@@ -36,3 +36,16 @@ storage/
 Thumbs.db
 .idea/
 .vscode/
+
+# Local tooling / scratch
+.claude/
+website/screenshots/
+
+# Local credentials convenience copy (canonical is docs/TEST_LOGINS.md)
+TEST_LOGINS.local.txt
+
+# Separate projects / scrape dumps (not part of clawSW)
+scraper/output/
+scraper/output_full/
+lusion-vibe-site/
+lusion-vibe-site.zip

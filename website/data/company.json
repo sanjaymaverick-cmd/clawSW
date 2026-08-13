@@ -4,6 +4,9 @@
   "founded": "2001",
   "hq": "Jodhpur, Rajasthan, India",
   "address": "G-588, Epip, Boranada-salawas Road, Boranada Industrial Area, Jodhpur (Raj.) 342012 India",
+  "legalName": "Sanjay Woodtech Private Limited",
+  "gstin": "",
+  "cin": "U36109RJ2019PTC067364",
   "phones": [
     "+91 63775 19088",
     "+91 93140 22777",
@@ -21,7 +24,7 @@
   },
   "stats": [
     {
-      "value": "28+",
+      "value": "25+",
       "label": "Years of experience"
     },
     {
@@ -38,7 +41,7 @@
     }
   ],
   "mission": "To give every Indian factory direct access to world-class industrial machinery — without middlemen, with expert installation and lifetime after-sales support.",
-  "story": "Founded in Jodhpur in 2001, Sanjay Woodtech started with a single goal — to bridge the gap between global machinery manufacturers and Indian production units. Today we operate across four cities with a dedicated technical team serving factories pan India.",
+  "story": "Founded in Jodhpur in 2001, Sanjay Wood Tech started with a single goal — to bridge the gap between global machinery manufacturers and Indian production units. Today we operate across four cities with a dedicated technical team serving factories pan India.",
   "team": [
     {
       "name": "Sanjay Bagriya",
@@ -77,56 +80,12 @@
       "description": "Complete pilot run support and formal project handover after successful installation and operator training."
     },
     {
-      "title": "Architecture & Design",
-      "description": "Technical Support for Factory Design & Planning"
-    },
-    {
-      "title": "Architectural Planning",
-      "description": "Initial concept to detailed factory layout — planned for maximum production efficiency."
-    },
-    {
-      "title": "Building Compliance",
-      "description": "Factory designs meeting industrial building standards and safety norms."
+      "title": "Factory Architecture & Design",
+      "description": "Factory design and layout planning — from initial concept to detailed floor layout built for maximum production efficiency and industrial building compliance."
     },
     {
       "title": "Project Coordination",
       "description": "Every stage coordinated — from design approvals to final installation and handover."
-    },
-    {
-      "title": "Efficient Design Solutions",
-      "description": "Scalable factory layouts built for realproduction requirements."
-    },
-    {
-      "title": "Consulting Services",
-      "description": "End-to-end consulting support for every stage of your factory setup"
-    },
-    {
-      "title": "Floor Compliance & Trainings",
-      "description": "Floor compliance assessment, safety checks and hands-on operator training for every machine installed."
-    },
-    {
-      "title": "DIRACERP Implementation",
-      "description": "Complete implementation and integration of DIRACERP factory management software for your production unit."
-    },
-    {
-      "title": "What is DIRACERP?",
-      "description": "DIRACERP is a complete factory management ERP system that Sanjay Wood Tech implements for production units — covering everything from order management and floor operations to billing, HR and quality assessment."
-    },
-    {
-      "title": "Order & Production Management",
-      "description": "Sample Development · Buyer Order Management · PPIC/T&A · BOM & Routings · Fair Management"
-    },
-    {
-      "title": "Factory & Floor Operations",
-      "description": "Floor Management · Machine Maintenance · Warehouse Management · Purchase Management · Shipping & Documentation"
-    },
-    {
-      "title": "Business Management",
-      "description": "Customer Relations Manager · Automated Billing · Budgeting · HR & Payroll · Quality & Assessment"
-    },
-    {
-      "title": "Reporting & Compliance",
-      "description": "Quality & Assessment · Production Reports · Compliance Tracking · Audit Management"
     }
   ],
   "why_us": [
@@ -186,7 +145,6 @@
     "The machinery delivered by Sanjay Wood Tech has transformed our manufacturing process. Accuracy, speed, and reliability have all improved. Their installation team completed the setup ahead of schedule, minimizing downtime for our business.",
     "What stood out most was the combination of affordable pricing and premium quality. We achieved substantial cost savings without compromising on performance. The technical support team has remained responsive even after installation.",
     "Choosing Sanjay Wood Tech was one of our best business decisions. Their machines are robust, easy to operate, and backed by excellent customer support. The return on investment has been faster than we anticipated.",
-    "We compared several vendors before making our decision. Sanjay Wood Tech not only offered the most competitive pricing but also demonstrated a strong commitment to customer success through timely installation and ongoing technical assistance.",
-    "Absolutely. We can provide customized quotations for individual machines or complete factory setups based on your production requirements."
+    "We compared several vendors before making our decision. Sanjay Wood Tech not only offered the most competitive pricing but also demonstrated a strong commitment to customer success through timely installation and ongoing technical assistance."
   ]
 }

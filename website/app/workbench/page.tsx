@@ -12,10 +12,10 @@ export default function WorkbenchPage() {
   return (
     <>
       <PageIntro
-        eyebrow="Sales enablement"
+        eyebrow="Interactive"
         title="Tools & spares"
-        highlight="physics workbench."
-        description="Drop service tools and spare kits onto a wooden bench. Bodies switch to kinematic while you drag for precise placement, then settle with damping — Lusion-level interaction for the spare-parts conversation."
+        highlight="interactive workbench."
+        description="Drag service tools and spare kits onto the bench and see them settle naturally. A hands-on way to explore the tooling and spares that ship with your machine."
       />
 
       <section
@@ -39,16 +39,16 @@ export default function WorkbenchPage() {
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {[
             {
-              t: "Kinematic drag",
-              d: "Held tools become kinematic for precise pointer following, then return to dynamic bodies.",
+              t: "Natural handling",
+              d: "Pick up a tool and it follows your pointer precisely, then settles onto the bench when you let go.",
             },
             {
-              t: "Spawn kit",
-              d: "Wrench, driver, caliper, blade, spare box, and clamp — ready for the service story.",
+              t: "Full service kit",
+              d: "Wrench, driver, caliper, blade, spare box, and clamp — the tooling that supports every machine we install.",
             },
             {
-              t: "Zustand state",
-              d: "All items live in useSceneStore for future AR export and sales notes hooks.",
+              t: "Genuine spares",
+              d: "Every machine is backed by stocked spares and pan-India service support.",
             },
           ].map((c) => (
             <div

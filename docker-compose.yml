@@ -107,8 +107,9 @@ services:
         # browser stays same-origin (login token shared with /app).
         NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-/api}
         NEXT_PUBLIC_DASHBOARD_URL: ${PUBLIC_DASHBOARD_URL:-/app/}
-        # Show demo account list on /login when testing (off in production).
-        NEXT_PUBLIC_SHOW_DEMO_LOGINS: ${SHOW_DEMO_LOGINS:-true}
+        # Show demo account list on /login when testing. Off by default so a
+        # plain bring-up never leaks it; set SHOW_DEMO_LOGINS=true to opt in.
+        NEXT_PUBLIC_SHOW_DEMO_LOGINS: ${SHOW_DEMO_LOGINS:-false}
     restart: unless-stopped
     environment:
       # Server-side rendering talks to the API over the compose network.

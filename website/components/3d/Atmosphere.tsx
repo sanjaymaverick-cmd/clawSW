@@ -72,7 +72,9 @@ const QUALITY_SETTINGS = {
     bokehScale: 3.4,
     focalLength: 0.06,
     smoothTime: 0.24,
-    enableDOF: true,
+    // DOF off: a mouse-driven focus pull kept blurring the machine itself as
+    // you looked around ("out of focus"). Inspection wants the whole unit sharp.
+    enableDOF: false,
     enableNoise: true,
   },
   medium: {
@@ -83,7 +85,7 @@ const QUALITY_SETTINGS = {
     bokehScale: 2.6,
     focalLength: 0.07,
     smoothTime: 0.28,
-    enableDOF: true,
+    enableDOF: false,
     enableNoise: true,
   },
   low: {
@@ -230,7 +232,7 @@ export function Atmosphere({
   const focusTarget = selectedPartPosition ?? defaultTarget;
 
   return (
-    <EffectComposer multisampling={0} enableNormalPass={false}>
+    <EffectComposer multisampling={4} enableNormalPass={false}>
       <SMAA />
 
       {settings.enableDOF ? (

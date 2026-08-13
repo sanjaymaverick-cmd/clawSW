@@ -35,6 +35,8 @@ export type Machine = {
   image: string | null;
   /** Optional GLB under /public — SafeMachineModel falls back if missing */
   glbUrl: string | null;
+  /** Real catalogue product slug for "Specs & enquiry" when it differs from `slug` */
+  productSlug?: string;
   /** Footprint in metres (for floor planner) */
   dimensions: { width: number; depth: number; height: number };
   /** Service clearance in metres */
@@ -228,8 +230,9 @@ export const machines: Machine[] = [
     dimensions: { width: 5.2, depth: 4.2, height: 1.8 },
     clearance: 0.9,
     color: "#e0a45a",
-    // Demo AR/GLB asset — replace with product-specific simplified mesh
-    glbUrl: "/hero3d/models/saw-blade.glb",
+    // No product-specific mesh yet — use honest placeholder geometry rather
+    // than dressing a generic saw-blade GLB up as this machine.
+    glbUrl: null,
     parts: SAW_PARTS,
     features: ["2700 mm capacity", "Main + scoring blades", "Touchscreen CNC"],
   }),
@@ -328,11 +331,12 @@ export const machines: Machine[] = [
   m({
     id: "four-side-moulder-model-mb4016d",
     slug: "four-side-moulder-model-mb4016d",
-    name: "Four Side Moulder",
-    model: "MB4016D",
+    name: "Four Side Moulder UA-523A",
+    model: "UA-523A",
     category: "Four Side Moulder",
     categorySlug: "solid-wood-machinery",
     description: "Precision four-side moulder for solid wood profiles.",
+    productSlug: "solid-wood-machinery-four-side-moulder-model-ua-523a",
     dimensions: { width: 3.5, depth: 1.4, height: 1.7 },
     clearance: 0.8,
     color: "#8a5a32",
@@ -341,11 +345,12 @@ export const machines: Machine[] = [
   m({
     id: "wide-belt-sander",
     slug: "wide-belt-sander",
-    name: "Wide Belt Sander",
-    model: "WS-R-RP1300",
+    name: "Wide Belt Sander RRP-1300",
+    model: "RRP-1300",
     category: "Wide Belt Sander",
     categorySlug: "solid-wood-machinery",
     description: "Heavy-duty wide belt sander for calibrated finishing.",
+    productSlug: "solid-wood-machinery-wide-belt-sander-model-rrp-1300",
     dimensions: { width: 2.2, depth: 1.8, height: 2.0 },
     clearance: 0.85,
     color: "#6a717a",
@@ -362,14 +367,11 @@ export function getDefaultMachine(): Machine {
 }
 
 export function getMachineByProductSlug(slug: string): Machine | undefined {
-  const exact = getMachine(slug);
-  if (exact) return exact;
-  return machines.find(
-    (m) =>
-      slug.includes(m.slug) ||
-      m.slug.includes(slug) ||
-      slug.startsWith(m.slug.split("-").slice(0, 3).join("-"))
-  );
+  // Exact match only. A loose prefix/substring match used to attach the wrong
+  // placeholder mesh to unrelated products (e.g. any four-side-moulder-* → MB4016D),
+  // which misrepresents the machine. Explicit `productSlug` links a 3D machine to
+  // a catalogue product when the slugs differ.
+  return machines.find((m) => m.slug === slug || m.productSlug === slug);
 }
 
 export function getMachinesByCategory(categorySlug: string): Machine[] {

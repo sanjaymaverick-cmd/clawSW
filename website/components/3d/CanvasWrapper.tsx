@@ -101,7 +101,7 @@ export default function CanvasWrapper({
           onPointerMissed={onPointerMissed}
           style={{ width: "100%", height: "100%", display: "block" }}
         >
-          <AdaptiveDpr pixelated />
+          <AdaptiveDpr />
           <AdaptiveEvents />
           {children}
           <Preload all />

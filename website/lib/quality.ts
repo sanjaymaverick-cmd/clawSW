@@ -88,13 +88,16 @@ export function detectQualityTier(): AutoQualityResult {
 }
 
 export function dprForQuality(q: QualityTier): [number, number] {
+  // R3F clamps the upper bound to the device's real devicePixelRatio, so these
+  // never oversample; the raised *lower* bound is what keeps frames sharp while
+  // the camera is moving (AdaptiveDpr drops toward the floor during motion).
   switch (q) {
     case "low":
-      return [1, 1.1];
+      return [1, 1.5];
     case "medium":
-      return [1, 1.35];
+      return [1.25, 2];
     default:
-      return [1, 1.75];
+      return [1.5, 2];
   }
 }
 
