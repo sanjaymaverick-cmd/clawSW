@@ -66,6 +66,36 @@ export default function SiteFooter() {
                 {company.phones[0]}
               </a>
             </div>
+            <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
+              {company.social?.instagram && (
+                <a
+                  href={company.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Sanjay Wood Tech on Instagram"
+                  className="social-link"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
+              )}
+              {company.social?.facebook && (
+                <a
+                  href={company.social.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Sanjay Wood Tech on Facebook"
+                  className="social-link"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14 9h3l.4-3H14V4.5c0-.9.3-1.5 1.6-1.5H17V.2C16.6.1 15.6 0 14.5 0 12 0 10.3 1.5 10.3 4.3V6H7.5v3h2.8v9H14V9z" />
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
 
           <FooterCol title="Explore" items={explore} />
@@ -95,6 +125,22 @@ export default function SiteFooter() {
 
       <style>{`
         footer .muted:hover { color: var(--wood); }
+        .social-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          border: 1px solid var(--border-strong);
+          color: var(--text-muted);
+          transition: color 0.2s, border-color 0.2s, background 0.2s;
+        }
+        .social-link:hover {
+          color: var(--wood);
+          border-color: var(--wood);
+          background: var(--surface-2);
+        }
         @media (max-width: 900px) {
           .footer-grid { grid-template-columns: 1fr 1fr !important; }
           .footer-grid > div:first-child { grid-column: 1 / -1; }

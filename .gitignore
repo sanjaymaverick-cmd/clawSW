@@ -36,3 +36,13 @@ storage/
 Thumbs.db
 .idea/
 .vscode/
+
+# Local tooling / scratch
+.claude/
+website/screenshots/
+
+# Separate projects / scrape dumps (not part of clawSW)
+scraper/output/
+scraper/output_full/
+lusion-vibe-site/
+lusion-vibe-site.zip

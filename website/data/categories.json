@@ -52,7 +52,7 @@
         "slug": "panel-processing-machinery--edge-banding",
         "name": "Edge Banding",
         "path": "product-category/panel-processing-machinery/edge-banding",
-        "count": 0
+        "count": 11
       },
       {
         "slug": "panel-processing-machinery--hot-press",
@@ -388,21 +388,9 @@
         "count": 2
       },
       {
-        "slug": "veneer-machinery--glue-applicator",
-        "name": "Glue Applicator",
-        "path": "product-category/veneer-machinery/glue-applicator",
-        "count": 2
-      },
-      {
         "slug": "veneer-line-machinery--hydraulic-hot-press",
         "name": "Hydraulic Hot Press",
         "path": "product-category/veneer-line-machinery/hydraulic-hot-press",
-        "count": 4
-      },
-      {
-        "slug": "veneer-machinery--hydraulic-hot-press",
-        "name": "Hydraulic Hot Press",
-        "path": "product-category/veneer-machinery/hydraulic-hot-press",
         "count": 4
       },
       {
@@ -412,21 +400,9 @@
         "count": 2
       },
       {
-        "slug": "veneer-machinery--veneer-guillotine",
-        "name": "Veneer Guillotine",
-        "path": "product-category/veneer-machinery/veneer-guillotine",
-        "count": 2
-      },
-      {
         "slug": "veneer-line-machinery--veneer-guillotine-taiwan",
         "name": "Veneer Guillotine (Taiwan)",
         "path": "product-category/veneer-line-machinery/veneer-guillotine-taiwan",
-        "count": 3
-      },
-      {
-        "slug": "veneer-machinery--veneer-guillotine-taiwan",
-        "name": "Veneer Guillotine (Taiwan)",
-        "path": "product-category/veneer-machinery/veneer-guillotine-taiwan",
         "count": 3
       },
       {
@@ -436,21 +412,9 @@
         "count": 1
       },
       {
-        "slug": "veneer-machinery--veneer-splicer",
-        "name": "Veneer Splicer",
-        "path": "product-category/veneer-machinery/veneer-splicer",
-        "count": 1
-      },
-      {
         "slug": "veneer-line-machinery--veneer-splicer-taiwan",
         "name": "Veneer Splicer (Taiwan)",
         "path": "product-category/veneer-line-machinery/veneer-splicer-taiwan",
-        "count": 2
-      },
-      {
-        "slug": "veneer-machinery--veneer-splicer-taiwan",
-        "name": "Veneer Splicer (Taiwan)",
-        "path": "product-category/veneer-machinery/veneer-splicer-taiwan",
         "count": 2
       }
     ]
