@@ -249,7 +249,7 @@ const intents: Intent[] = [
   {
     keywords: ["predict", "outlook", "forecast", "projection"],
     answer: (snap) => ({
-      title: "Predictions",
+      title: "Run-rate outlook",
       text: snap.predictions
         .map((p) => `• [${p.horizon}] ${p.title}: ${p.estimate} (${p.confidence}) — ${p.basis}`)
         .join("\n"),

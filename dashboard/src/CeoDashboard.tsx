@@ -93,7 +93,7 @@ export default function CeoDashboard({
   const [chat, setChat] = useState<{ role: "user" | "ai"; title?: string; text: string }[]>([
     {
       role: "ai",
-      title: "Local AI Command Center",
+      title: "Local Command Center",
       text: "Ask in plain language. Answers use live CEO aggregates — no paid API required. Cloud brief is optional below.",
     },
   ]);
@@ -188,7 +188,7 @@ export default function CeoDashboard({
             Owner · CEO command center
           </p>
           <h1 style={{ margin: "6px 0 0", fontSize: "1.45rem", fontWeight: 700, letterSpacing: "-0.02em" }}>
-            Real-time business performance
+            Business performance overview
           </h1>
           <p style={{ margin: "8px 0 0", fontSize: "0.875rem", color: "var(--muted)", maxWidth: 560 }}>
             Local intelligence by default — metrics, risks, morning brief, and Q&A without a paid model.
@@ -289,6 +289,9 @@ export default function CeoDashboard({
               {snap.receivables.overdue_count} overdue · 0–30 {formatInr(snap.receivables.bucket_0_30)} · 31–60{" "}
               {formatInr(snap.receivables.bucket_31_60)} · 60+ {formatInr(snap.receivables.bucket_60_plus)}
             </p>
+            <p style={{ margin: "6px 0 0", fontSize: "0.72rem", color: "var(--dim)", fontStyle: "italic" }}>
+              Inferred from aged website orders — not a Tally ledger balance.
+            </p>
             <Button style={{ marginTop: 12, fontSize: "0.8rem" }} onClick={() => onNavigate?.("invoicing")}>
               Open invoicing
             </Button>
@@ -315,6 +318,9 @@ export default function CeoDashboard({
                 ? ` · lowest margin ${snap.projects.lowest_margin_pct}% (${snap.projects.lowest_margin_customer})`
                 : ""}
             </p>
+            <p style={{ margin: "6px 0 0", fontSize: "0.72rem", color: "var(--dim)", fontStyle: "italic" }}>
+              Margin is entered per project — no line-item costing yet.
+            </p>
             <Button style={{ marginTop: 12, fontSize: "0.8rem" }} onClick={() => onNavigate?.("projects")}>
               Open projects
             </Button>
@@ -338,7 +344,10 @@ export default function CeoDashboard({
       {/* Predictions + maintenance */}
       <section className="grid gap-4 lg:grid-cols-2">
         <div>
-          <h2 className="ceo-section-title">Predictions</h2>
+          <h2 className="ceo-section-title">Run-rate outlook</h2>
+          <p style={{ margin: "-4px 0 10px", fontSize: "0.78rem", color: "var(--dim)" }}>
+            Simple extrapolation from current data — a sketch, not a forecast.
+          </p>
           <div className="grid gap-3 sm:grid-cols-2">
             {snap.predictions.map((p) => (
               <div key={p.id} className="staff-card">
@@ -391,12 +400,12 @@ export default function CeoDashboard({
         </section>
       )}
 
-      {/* Local AI Command Center */}
+      {/* Local Command Center */}
       <section className="staff-card">
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: 12, marginBottom: 12 }}>
           <div>
             <h2 className="staff-card-title" style={{ margin: 0 }}>
-              Local AI Command Center
+              Local Command Center
             </h2>
             <p style={{ margin: "6px 0 0", fontSize: "0.85rem", color: "var(--muted)" }}>
               Free keyword intelligence over live aggregates — no Anthropic required.
